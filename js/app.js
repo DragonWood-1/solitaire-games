@@ -20,6 +20,7 @@ class App {
     this._coachIdleTime = 0;
     this._isDaily = false;
     this._loadingProgress = 0;
+    this._comboCount = 0;
   }
 
   // ==========================================
@@ -205,6 +206,10 @@ class App {
       this._closeSidebar();
       this._openStatsModal();
     });
+    document.getElementById('nav-games')?.addEventListener('click', () => {
+      this._closeSidebar();
+      this._openModal('games-modal');
+    });
 
     // Header buttons
     document.getElementById('theme-btn')?.addEventListener('click', () => this._openThemeModal());
@@ -382,6 +387,7 @@ class App {
 
     this._autoCompleteRunning = false;
     this._selectedCardInfo = null;
+    this._comboCount = 0;
     this.renderer.clearHints();
     this.renderer.clearDropHighlights();
 
@@ -651,15 +657,68 @@ class App {
   }
 
   _moveCard(fromPile, cardIndex, toPile) {
+    const scoreBefore = this.game.getScore();
     const moved = this.game.moveCards(fromPile, cardIndex, toPile);
     if (moved) {
       this.audio.playCardPlace();
       this.renderer.renderAll();
       this._updateActionBar();
+
+      // Arcade: score popup
+      const scoreAfter = this.game.getScore();
+      const delta = scoreAfter - scoreBefore;
+      if (delta !== 0) {
+        this._spawnScorePopup(delta);
+      }
+
+      // Arcade: combo counter
+      this._comboCount = (this._comboCount || 0) + 1;
+      if (this._comboCount === 3) this._showComboBanner('TRIPLE! 🔥');
+      else if (this._comboCount === 5) this._showComboBanner('COMBO x5! ⚡');
+      else if (this._comboCount === 10) this._showComboBanner('ON FIRE! 🔥🔥🔥');
+
+      // Flash the card just placed
+      setTimeout(() => {
+        const destPileId = toPile.type === 'foundation'
+          ? `pile-foundation-${toPile.index}`
+          : toPile.type === 'tableau' ? `pile-tableau-${toPile.index}` : null;
+        if (destPileId) {
+          const pileEl = document.getElementById(destPileId);
+          const lastCard = pileEl?.querySelector('.card:last-of-type');
+          if (lastCard) {
+            lastCard.classList.add('card-just-placed');
+            lastCard.addEventListener('animationend', () => lastCard.classList.remove('card-just-placed'), { once: true });
+          }
+        }
+      }, 50);
     } else {
       this.audio.playError();
+      this._comboCount = 0;
     }
     return moved;
+  }
+
+  _spawnScorePopup(delta) {
+    const popup = document.createElement('div');
+    popup.className = `score-popup ${delta > 0 ? (delta >= 15 ? 'bonus' : 'positive') : 'negative'}`;
+    popup.textContent = delta > 0 ? `+${delta}` : String(delta);
+
+    // Position near the last moved card or center of board
+    const boardEl = document.getElementById('game-board') || document.getElementById('game-container');
+    const rect = boardEl ? boardEl.getBoundingClientRect() : { left: window.innerWidth/2, top: window.innerHeight/2 };
+    popup.style.left = `${rect.left + rect.width * 0.35 + Math.random() * rect.width * 0.3}px`;
+    popup.style.top  = `${rect.top  + rect.height * 0.3  + Math.random() * rect.height * 0.2}px`;
+
+    document.body.appendChild(popup);
+    popup.addEventListener('animationend', () => popup.remove(), { once: true });
+  }
+
+  _showComboBanner(text) {
+    const banner = document.createElement('div');
+    banner.className = 'combo-banner';
+    banner.textContent = text;
+    document.body.appendChild(banner);
+    banner.addEventListener('animationend', () => banner.remove(), { once: true });
   }
 
   // ==========================================

@@ -22,6 +22,7 @@ class ThemeManager {
       { id: 'cabin',      name: 'Cabin',       emoji: '🪵', description: 'Rustic warmth by the fire',   ambientType: 'embers' },
       { id: 'neon',       name: 'Neon',        emoji: '💡', description: 'Electric hot pink & lime',     ambientType: 'none' },
       { id: 'ocean',      name: 'Ocean',       emoji: '🌊', description: 'Deep sea & seafoam',           ambientType: 'bubbles' },
+      { id: 'animals',    name: 'Animals',     emoji: '🦁', description: 'Wild nature & forest life',     ambientType: 'fireflies' },
     ];
   }
 

@@ -11,6 +11,25 @@ class AudioEngine {
     this._ambientNodes = [];
     this._ambientGain = null;
     this._initialized = false;
+    this._unlocked = false;
+    this._pendingResume = null;
+
+    // Unlock AudioContext on first user gesture (browsers require this)
+    const unlock = () => {
+      if (!this._initialized) this._init();
+      if (this._ctx && this._ctx.state === 'suspended') {
+        this._ctx.resume().catch(() => {});
+      }
+      this._unlocked = true;
+      document.removeEventListener('mousedown', unlock, true);
+      document.removeEventListener('touchstart', unlock, true);
+      document.removeEventListener('keydown', unlock, true);
+      document.removeEventListener('pointerdown', unlock, true);
+    };
+    document.addEventListener('mousedown', unlock, { capture: true, passive: true });
+    document.addEventListener('touchstart', unlock, { capture: true, passive: true });
+    document.addEventListener('keydown', unlock, { capture: true, passive: true });
+    document.addEventListener('pointerdown', unlock, { capture: true, passive: true });
   }
 
   _init() {
@@ -34,15 +53,21 @@ class AudioEngine {
 
   _resume() {
     if (this._ctx && this._ctx.state === 'suspended') {
-      this._ctx.resume();
+      return this._ctx.resume().catch(() => {});
     }
+    return Promise.resolve();
   }
 
   _play(fn) {
     if (!this._enabled) return;
     if (!this._init()) return;
-    this._resume();
-    try { fn(); } catch(e) {}
+    if (this._ctx.state === 'suspended') {
+      this._ctx.resume().then(() => {
+        try { fn(); } catch(e) {}
+      }).catch(() => {});
+    } else {
+      try { fn(); } catch(e) {}
+    }
   }
 
   // ==========================================
@@ -260,12 +285,18 @@ class AudioEngine {
     this._ambientType = type;
     if (type === 'none') return;
     if (!this._init()) return;
-    this._resume();
-    try {
-      if (type === 'rain') this._startRain();
-      else if (type === 'fire') this._startFireplace();
-      else if (type === 'lofi') this._startLofi();
-    } catch(e) {}
+    const start = () => {
+      try {
+        if (type === 'rain') this._startRain();
+        else if (type === 'fire') this._startFireplace();
+        else if (type === 'lofi') this._startLofi();
+      } catch(e) {}
+    };
+    if (this._ctx.state === 'suspended') {
+      this._ctx.resume().then(start).catch(() => {});
+    } else {
+      start();
+    }
   }
 
   _startRain() {

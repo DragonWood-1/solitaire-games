@@ -80,6 +80,9 @@
         <button class="sidebar-nav-item" id="nav-stats">
           <span class="nav-icon">📊</span> Statistics
         </button>
+        <button class="sidebar-nav-item games-hub-link" id="nav-games">
+          <span class="nav-icon">🎮</span> More Games
+        </button>
       </nav>
       <div class="sidebar-streak">
         <span class="streak-icon">🔥</span>
@@ -413,6 +416,61 @@
           <div class="shortcut-item"><kbd>Enter</kbd><span>Auto-Move Selected Card</span></div>
           <div class="shortcut-item"><kbd>Esc</kbd><span>Deselect / Close Modal</span></div>
           <div class="shortcut-item"><kbd>?</kbd><span>Show This Help</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Games Hub Modal -->
+    <div class="modal-overlay" id="games-modal" role="dialog" aria-modal="true" aria-labelledby="games-title" hidden>
+      <div class="modal games-modal">
+        <div class="modal-header">
+          <h2 id="games-title">🎮 More Games</h2>
+          <button class="btn-icon modal-close" data-modal="games-modal" aria-label="Close">✕</button>
+        </div>
+        <p class="games-modal-sub">More brain games to keep you sharp</p>
+        <div class="games-grid">
+          <a href="/games/chess.html" class="game-card-link">
+            <div class="game-card-hub">
+              <div class="game-card-icon">♟️</div>
+              <div class="game-card-name">Chess</div>
+              <div class="game-card-desc">Classic strategy against AI</div>
+            </div>
+          </a>
+          <a href="/games/sudoku.html" class="game-card-link">
+            <div class="game-card-hub">
+              <div class="game-card-icon">🔢</div>
+              <div class="game-card-name">Sudoku</div>
+              <div class="game-card-desc">Number logic puzzles</div>
+            </div>
+          </a>
+          <a href="/games/mahjong.html" class="game-card-link">
+            <div class="game-card-hub">
+              <div class="game-card-icon">🀄</div>
+              <div class="game-card-name">Mahjong</div>
+              <div class="game-card-desc">Tile matching solitaire</div>
+            </div>
+          </a>
+          <a href="/games/crossword.html" class="game-card-link">
+            <div class="game-card-hub">
+              <div class="game-card-icon">📝</div>
+              <div class="game-card-name">Crossword</div>
+              <div class="game-card-desc">Word puzzle challenges</div>
+            </div>
+          </a>
+          <a href="/games/poker.html" class="game-card-link">
+            <div class="game-card-hub">
+              <div class="game-card-icon">🃏</div>
+              <div class="game-card-name">Poker Trainer</div>
+              <div class="game-card-desc">Learn Texas Hold'em</div>
+            </div>
+          </a>
+          <a href="/games/brain.html" class="game-card-link">
+            <div class="game-card-hub">
+              <div class="game-card-icon">🧠</div>
+              <div class="game-card-name">Brain Games</div>
+              <div class="game-card-desc">Memory, sequence & math</div>
+            </div>
+          </a>
         </div>
       </div>
     </div>

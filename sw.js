@@ -1,4 +1,4 @@
-const CACHE_NAME = 'solitaire-realm-v1';
+const CACHE_NAME = 'solitaire-realm-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -15,7 +15,13 @@ const ASSETS_TO_CACHE = [
   '/js/storage.js',
   '/js/keyboard.js',
   '/js/app.js',
-  '/assets/icons/icon.svg'
+  '/assets/icons/icon.svg',
+  '/games/chess.html',
+  '/games/sudoku.html',
+  '/games/mahjong.html',
+  '/games/crossword.html',
+  '/games/poker.html',
+  '/games/brain.html'
 ];
 
 self.addEventListener('install', (event) => {

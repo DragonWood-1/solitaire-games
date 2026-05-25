@@ -483,3 +483,60 @@
   color: #d8f0f8;
   border-color: rgba(32,184,200,0.3);
 }
+
+/* ============================================
+   11. Animals
+   ============================================ */
+.theme-animals {
+  --bg-primary: #0a1a0a;
+  --bg-secondary: #0f2410;
+  --card-bg: #fffef0;
+  --card-bg-back: #1a4a0a;
+  --card-border: rgba(100, 200, 60, 0.4);
+  --card-shadow: 0 4px 14px rgba(0,0,0,0.5), 0 2px 4px rgba(60,160,20,0.2);
+  --text-primary: #e8f8d8;
+  --text-secondary: #88b878;
+  --accent: #78d830;
+  --accent-glow: rgba(120, 216, 48, 0.5);
+  --pile-bg: rgba(80, 180, 40, 0.07);
+  --pile-border: rgba(100, 200, 60, 0.3);
+  --header-bg: rgba(8, 20, 8, 0.95);
+  --modal-bg: #0e2010;
+  --sidebar-bg: #0a1a0a;
+  --xp-bar-fill: #78d830;
+  --btn-primary-bg: #4aa820;
+}
+
+.theme-animals .card-back {
+  background: linear-gradient(135deg, #1a4a0a 0%, #2a6a10 100%);
+}
+
+.theme-animals .card-back::after {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(120,216,48,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(60,160,20,0.15) 0%, transparent 50%),
+    repeating-linear-gradient(
+      30deg,
+      rgba(100,200,60,0.05) 0px,
+      rgba(100,200,60,0.05) 1px,
+      transparent 1px,
+      transparent 8px
+    );
+}
+
+.theme-animals .pile-placeholder {
+  color: rgba(120, 216, 48, 0.4);
+}
+
+.theme-animals .card.red { color: #e83030; }
+.theme-animals .card.black { color: #1a2a10; }
+
+.theme-animals .logo-sr {
+  text-shadow: 0 0 20px rgba(120, 216, 48, 0.8);
+}
+
+.theme-card[data-theme="animals"] {
+  background: linear-gradient(135deg, #0a1a0a, #1a4a10);
+  color: #e8f8d8;
+  border-color: rgba(100,200,60,0.3);
+}

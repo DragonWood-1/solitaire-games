@@ -145,6 +145,10 @@ class DragManager {
     this._velocity = { x: 0, y: 0 };
     this._ghostX = this._fromCardRect.left;
     this._ghostY = this._fromCardRect.top;
+    this._snapX = null;
+    this._snapY = null;
+    this._isSnapped = false;
+    this._snapEl = null;
   }
 
   _onPointerMove(e) {
@@ -251,8 +255,38 @@ class DragManager {
   _updateGhostPosition() {
     if (!this._dragging) return;
     const ghost = this._dragGhost;
+
+    if (this._isSnapped && this._snapX !== null) {
+      // Magnetic snap: lerp ghost toward snap position
+      this._ghostX += (this._snapX - this._ghostX) * 0.35;
+      this._ghostY += (this._snapY - this._ghostY) * 0.35;
+    }
+
     ghost.style.left = `${this._ghostX}px`;
     ghost.style.top = `${this._ghostY}px`;
+  }
+
+  _computeSnapPosition(targetPile) {
+    if (!targetPile || !targetPile.el) return null;
+    const pileRect = targetPile.el.getBoundingClientRect();
+
+    if (targetPile.type === 'foundation') {
+      return { x: pileRect.left, y: pileRect.top };
+    }
+
+    if (targetPile.type === 'tableau') {
+      // Snap to just below the last face-up card in the pile
+      const cards = targetPile.el.querySelectorAll('.card');
+      if (cards.length === 0) {
+        return { x: pileRect.left, y: pileRect.top };
+      }
+      const lastCard = cards[cards.length - 1];
+      const lastRect = lastCard.getBoundingClientRect();
+      const faceUpOffset = 28;
+      return { x: lastRect.left, y: lastRect.top + faceUpOffset };
+    }
+
+    return { x: pileRect.left, y: pileRect.top };
   }
 
   _updateDropTarget(x, y) {
@@ -275,8 +309,13 @@ class DragManager {
 
     // Update visual target indicator
     if (this._targetEl) {
-      this._targetEl.classList.remove('valid-drop-target', 'invalid-drop');
+      this._targetEl.classList.remove('valid-drop-target', 'invalid-drop', 'snap-target');
     }
+
+    // Clear snap state
+    this._isSnapped = false;
+    this._snapX = null;
+    this._snapY = null;
 
     if (targetPile && targetPile.el) {
       const card = this._dragCards[0];
@@ -288,6 +327,21 @@ class DragManager {
       }
       this._targetEl = targetPile.el;
       this._targetEl.classList.add(isValid ? 'valid-drop-target' : 'invalid-drop');
+
+      if (isValid) {
+        // Compute snap landing position
+        const snapPos = this._computeSnapPosition(targetPile);
+        if (snapPos) {
+          const dist = Math.sqrt((this._ghostX - snapPos.x) ** 2 + (this._ghostY - snapPos.y) ** 2);
+          // Engage snap when within 90px of the target
+          if (dist < 90) {
+            this._snapX = snapPos.x;
+            this._snapY = snapPos.y;
+            this._isSnapped = true;
+            this._targetEl.classList.add('snap-target');
+          }
+        }
+      }
     } else {
       this._targetEl = null;
     }
@@ -331,8 +385,12 @@ class DragManager {
     this._markSourceDragging(false);
     this.renderer.clearDropHighlights();
 
+    this._isSnapped = false;
+    this._snapX = null;
+    this._snapY = null;
+
     if (this._targetEl) {
-      this._targetEl.classList.remove('valid-drop-target', 'invalid-drop');
+      this._targetEl.classList.remove('valid-drop-target', 'invalid-drop', 'snap-target');
       this._targetEl = null;
     }
 
