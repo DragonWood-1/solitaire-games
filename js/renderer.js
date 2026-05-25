@@ -152,7 +152,10 @@ class Renderer {
 
       pile.appendChild(el);
     }
-    card && (pile.style.minWidth = drawMode === 3 ? `calc(var(--card-width) + ${(showCount - 1) * this._wasteFanOffset}px)` : '');
+
+    pile.style.minWidth = (drawMode === 3 && showCount > 1)
+      ? `calc(var(--card-width) + ${(showCount - 1) * this._wasteFanOffset}px)`
+      : '';
   }
 
   _renderFoundation(index) {
@@ -213,6 +216,67 @@ class Renderer {
     const cardHeight = parseInt(getComputedStyle(document.documentElement)
       .getPropertyValue('--card-height')) || 112;
     pile.style.minHeight = `${topPos + cardHeight}px`;
+  }
+
+  // ==========================================
+  // Real-time Render: capture → render → FLIP animate
+  // ==========================================
+
+  /** Call instead of renderAll() after any move to get smooth slide animations */
+  renderWithAnimation() {
+    // 1. FIRST: snapshot positions of every visible card before DOM changes
+    const before = this._captureCardPositions();
+
+    // 2. LAST: update the DOM
+    this.renderAll();
+
+    // 3. INVERT + PLAY: for each card now in the DOM, animate from old pos to new pos
+    if (this.animationSpeed === 0) return;
+
+    const duration = Math.round(220 * this.animationSpeed);
+    const easing = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+
+    document.querySelectorAll('.card').forEach(el => {
+      const id = el.dataset.cardId;
+      if (!id || !before[id]) return;
+
+      const newRect = el.getBoundingClientRect();
+      const oldRect = before[id];
+
+      const dx = oldRect.left - newRect.left;
+      const dy = oldRect.top  - newRect.top;
+
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return; // didn't move
+
+      // Snap back to old position instantly, then animate to new
+      el.style.transition = 'none';
+      el.style.transform  = `translate(${dx}px,${dy}px)`;
+      el.style.zIndex     = '500';
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.style.transition = `transform ${duration}ms ${easing}`;
+          el.style.transform  = '';
+          const cleanup = () => {
+            el.style.transition = '';
+            el.style.zIndex     = '';
+          };
+          el.addEventListener('transitionend', cleanup, { once: true });
+          // Safety: clean up even if transitionend never fires
+          setTimeout(cleanup, duration + 50);
+        });
+      });
+    });
+  }
+
+  /** Snapshot { cardId: DOMRect } for every card currently in the DOM */
+  _captureCardPositions() {
+    const map = {};
+    document.querySelectorAll('.card').forEach(el => {
+      const id = el.dataset.cardId;
+      if (id) map[id] = el.getBoundingClientRect();
+    });
+    return map;
   }
 
   // ==========================================

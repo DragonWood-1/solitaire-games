@@ -436,7 +436,7 @@ class App {
   _onGameUpdate(game) {
     this.storage.saveGame(game);
     this._updateActionBar();
-    this.renderer.renderAll();
+    this.renderer.renderWithAnimation();
     this.audio.playCardPlace();
     this._resetAICoachTimer();
   }
@@ -529,7 +529,7 @@ class App {
     if (this.game.gameOver) return;
     this._clearSelection();
     if (this.game.drawCard()) {
-      this.renderer.renderAll();
+      this.renderer.renderWithAnimation();
       this._updateActionBar();
     }
   }
@@ -661,7 +661,7 @@ class App {
     const moved = this.game.moveCards(fromPile, cardIndex, toPile);
     if (moved) {
       this.audio.playCardPlace();
-      this.renderer.renderAll();
+      this.renderer.renderWithAnimation();
       this._updateActionBar();
 
       // Arcade: score popup
@@ -829,7 +829,7 @@ class App {
   _undo() {
     if (!this.game.canUndo()) return;
     this.game.undo();
-    this.renderer.renderAll();
+    this.renderer.renderWithAnimation();
     this._updateActionBar();
     this._clearSelection();
     this.audio.playCardFlip();
@@ -838,7 +838,7 @@ class App {
   _redo() {
     if (!this.game.canRedo()) return;
     this.game.redo();
-    this.renderer.renderAll();
+    this.renderer.renderWithAnimation();
     this._updateActionBar();
     this._clearSelection();
   }
