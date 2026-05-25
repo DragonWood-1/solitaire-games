@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poker Trainer - SolitaireRealm</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d1a;color:#e8e0ff;font-family:'Segoe UI',sans-serif;min-height:100vh}
+.game-nav{background:#16213e;padding:12px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;border-bottom:2px solid #e94560;position:sticky;top:0;z-index:100}
+.nav-logo{color:#e94560;font-size:1.3rem;font-weight:700;text-decoration:none}
+.nav-links{display:flex;gap:12px;flex-wrap:wrap}
+.nav-links a{color:#e8e0ff;text-decoration:none;padding:4px 10px;border-radius:6px;font-size:0.9rem;transition:background 0.2s}
+.nav-links a:hover{background:#e9456033}
+.nav-links a.active{background:#e94560;color:#fff}
+h1{text-align:center;padding:12px;color:#e94560;font-size:1.6rem}
+.mode-tabs{display:flex;justify-content:center;gap:8px;padding:12px;flex-wrap:wrap}
+.tab{background:#2a2a4a;color:#a8a0cc;border:2px solid #3a3a5a;border-radius:8px;padding:8px 18px;cursor:pointer;font-size:0.9rem;transition:all 0.2s}
+.tab.active{background:#e9456033;color:#e94560;border-color:#e94560}
+.mode-panel{display:none;max-width:900px;margin:0 auto;padding:16px}
+.mode-panel.active{display:block}
+.score-bar{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;padding:10px 20px;margin-bottom:16px}
+.score-item{color:#a8a0cc;font-size:0.9rem}
+.score-item span{color:#e8e0ff;font-weight:700}
+.card{width:80px;height:115px;border-radius:10px;border:2px solid #4a4a6a;background:linear-gradient(145deg,#f8f6ff,#ece8ff);display:inline-flex;flex-direction:column;align-items:center;justify-content:center;font-size:2rem;position:relative;box-shadow:0 4px 12px #00000088;user-select:none}
+.card.red{color:#cc1122}
+.card.black{color:#110a22}
+.card .corner{position:absolute;font-size:0.72rem;font-weight:700;line-height:1.1;display:flex;flex-direction:column;align-items:center}
+.card .corner.tl{top:4px;left:5px}
+.card .corner.br{bottom:4px;right:5px;transform:rotate(180deg)}
+.card.back{background:linear-gradient(135deg,#16213e,#0d0d1a,#16213e);border-color:#e94560;color:#e94560;font-size:1.8rem}
+.card.small{width:60px;height:86px;font-size:1.5rem}
+.card.small .corner{font-size:0.58rem}
+.card-area{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+.section-title{color:#e94560;font-size:1rem;text-align:center;margin-bottom:8px;font-weight:700}
+.btn{background:#e94560;color:#fff;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-size:0.95rem;transition:background 0.2s;margin:4px}
+.btn:hover{background:#c73450}
+.btn-sec{background:#2a2a4a;color:#e8e0ff;border:1px solid #3a3a5a}
+.btn-sec:hover{background:#3a3a5a}
+.action-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.hand-btns{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;max-width:500px;margin:0 auto}
+@media(min-width:500px){.hand-btns{grid-template-columns:repeat(3,1fr)}}
+.hand-btn{background:#2a2a4a;color:#e8e0ff;border:2px solid #3a3a5a;border-radius:8px;padding:8px 10px;cursor:pointer;font-size:0.82rem;transition:all 0.2s;text-align:center}
+.hand-btn:hover{border-color:#e94560;background:#e9456022}
+.feedback{text-align:center;font-size:1rem;font-weight:700;min-height:36px;padding:8px 16px;border-radius:8px;margin:8px auto;max-width:560px}
+.feedback.correct{color:#4a9a4a;background:#4a9a4a22}
+.feedback.wrong{color:#e94560;background:#e9456022}
+.feedback.info{color:#e9a020;background:#e9a02022}
+.divider{border:none;border-top:1px solid #2a2a4a;margin:16px 0}
+.rankings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:8px;margin-top:8px}
+.rank-item{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:6px;padding:8px}
+.rank-name{color:#e94560;font-weight:700;margin-bottom:2px;font-size:0.9rem}
+.rank-desc{color:#a8a0cc;font-size:0.82rem}
+.card-label{text-align:center;color:#a8a0cc;font-size:0.8rem;margin-top:-8px;margin-bottom:8px}
+.action-choice-group{display:flex;gap:8px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.action-choice{background:#2a2a4a;color:#e8e0ff;border:2px solid #3a3a5a;border-radius:8px;padding:10px 22px;cursor:pointer;font-size:0.95rem;transition:all 0.2s;min-width:90px;text-align:center}
+.action-choice:hover{border-color:#e94560;background:#e9456022}
+.odds-display{text-align:center;font-size:2.5rem;font-weight:700;color:#e94560;margin:8px 0}
+.odds-bar{height:18px;background:#1a1a2e;border-radius:9px;overflow:hidden;max-width:400px;margin:8px auto}
+.odds-fill{height:100%;background:linear-gradient(90deg,#e94560,#e9a020);border-radius:9px;transition:width 0.6s}
+.he-hand{text-align:center;color:#e9a020;font-weight:700;font-size:0.95rem;min-height:22px;margin-bottom:6px}
+</style>
+</head>
+<body>
+<nav class="game-nav">
+  <a href="/" class="nav-logo">🃏 SolitaireRealm</a>
+  <div class="nav-links">
+    <a href="/">Solitaire</a>
+    <a href="/games/chess.html">Chess</a>
+    <a href="/games/sudoku.html">Sudoku</a>
+    <a href="/games/mahjong.html">Mahjong</a>
+    <a href="/games/crossword.html">Crossword</a>
+    <a href="/games/poker.html" class="active">Poker</a>
+    <a href="/games/brain.html">Brain Games</a>
+  </div>
+</nav>
+<h1>🃏 Poker Hand Trainer</h1>
+<div class="mode-tabs">
+  <div class="tab active" onclick="switchMode('identifier')">Hand Identifier</div>
+  <div class="tab" onclick="switchMode('holdem')">Hold'em Trainer</div>
+  <div class="tab" onclick="switchMode('odds')">Odds Calculator</div>
+  <div class="tab" onclick="switchMode('rules')">Hand Rankings</div>
+</div>
+
+<!-- Mode 1: Hand Identifier -->
+<div class="mode-panel active" id="mode-identifier">
+  <div class="score-bar">
+    <div class="score-item">Score: <span id="id-score">0</span></div>
+    <div class="score-item">Streak: <span id="id-streak">0</span></div>
+    <div class="score-item">Hands: <span id="id-total">0</span></div>
+  </div>
+  <div class="section-title">What poker hand is this?</div>
+  <div class="card-area" id="id-cards"></div>
+  <div class="feedback" id="id-feedback"></div>
+  <div class="hand-btns">
+    <div class="hand-btn" onclick="guessHand('Royal Flush')">Royal Flush</div>
+    <div class="hand-btn" onclick="guessHand('Straight Flush')">Straight Flush</div>
+    <div class="hand-btn" onclick="guessHand('Four of a Kind')">Four of a Kind</div>
+    <div class="hand-btn" onclick="guessHand('Full House')">Full House</div>
+    <div class="hand-btn" onclick="guessHand('Flush')">Flush</div>
+    <div class="hand-btn" onclick="guessHand('Straight')">Straight</div>
+    <div class="hand-btn" onclick="guessHand('Three of a Kind')">Three of a Kind</div>
+    <div class="hand-btn" onclick="guessHand('Two Pair')">Two Pair</div>
+    <div class="hand-btn" onclick="guessHand('One Pair')">One Pair</div>
+    <div class="hand-btn" onclick="guessHand('High Card')">High Card</div>
+  </div>
+  <div class="action-btns"><button class="btn" onclick="dealIdentifier()">Deal New Hand</button></div>
+</div>
+
+<!-- Mode 2: Hold'em Trainer -->
+<div class="mode-panel" id="mode-holdem">
+  <div class="score-bar">
+    <div class="score-item">Score: <span id="he-score">0</span></div>
+    <div class="score-item">Streak: <span id="he-streak">0</span></div>
+  </div>
+  <div class="section-title">Your Hole Cards</div>
+  <div class="card-area" id="he-hole"></div>
+  <div class="card-label">Your private cards</div>
+  <div class="section-title" style="margin-top:8px">Community Cards (Flop)</div>
+  <div class="card-area" id="he-community"></div>
+  <div class="card-label">Shared board cards</div>
+  <div class="he-hand" id="he-hand-display"></div>
+  <div class="feedback" id="he-feedback"></div>
+  <div class="section-title">What is your best action?</div>
+  <div class="action-choice-group">
+    <div class="action-choice" onclick="heAction('fold')">🗑 Fold</div>
+    <div class="action-choice" onclick="heAction('call')">✋ Check/Call</div>
+    <div class="action-choice" onclick="heAction('raise')">🚀 Raise/Bet</div>
+  </div>
+  <div class="action-btns"><button class="btn" onclick="dealHoldem()">Deal New Hand</button></div>
+</div>
+
+<!-- Mode 3: Odds Calculator -->
+<div class="mode-panel" id="mode-odds">
+  <div class="section-title">Your Hole Cards</div>
+  <div class="card-area" id="odds-hole"></div>
+  <div class="section-title" style="margin-top:4px">Flop (Community Cards)</div>
+  <div class="card-area" id="odds-community"></div>
+  <div class="odds-display" id="odds-value">--</div>
+  <div class="odds-bar"><div class="odds-fill" id="odds-fill" style="width:0"></div></div>
+  <div id="odds-breakdown" style="max-width:400px;margin:10px auto;font-size:0.85rem;color:#a8a0cc;text-align:center;min-height:40px"></div>
+  <div class="action-btns">
+    <button class="btn" onclick="calcOdds()">Calculate Odds</button>
+    <button class="btn btn-sec" onclick="dealOdds()">New Hand</button>
+  </div>
+  <p style="text-align:center;color:#6a6090;font-size:0.78rem;margin-top:8px">Win probability vs one random opponent via Monte Carlo (500 simulations)</p>
+</div>
+
+<!-- Mode 4: Rules Reference -->
+<div class="mode-panel" id="mode-rules">
+  <div class="section-title">Poker Hand Rankings (Best to Worst)</div>
+  <div class="rankings-grid">
+    <div class="rank-item"><div class="rank-name">1. Royal Flush</div><div class="rank-desc">A K Q J 10 — same suit</div></div>
+    <div class="rank-item"><div class="rank-name">2. Straight Flush</div><div class="rank-desc">5 consecutive, same suit</div></div>
+    <div class="rank-item"><div class="rank-name">3. Four of a Kind</div><div class="rank-desc">Four cards of same rank</div></div>
+    <div class="rank-item"><div class="rank-name">4. Full House</div><div class="rank-desc">Three of a kind + a pair</div></div>
+    <div class="rank-item"><div class="rank-name">5. Flush</div><div class="rank-desc">5 cards, same suit</div></div>
+    <div class="rank-item"><div class="rank-name">6. Straight</div><div class="rank-desc">5 consecutive ranks</div></div>
+    <div class="rank-item"><div class="rank-name">7. Three of a Kind</div><div class="rank-desc">Three cards of same rank</div></div>
+    <div class="rank-item"><div class="rank-name">8. Two Pair</div><div class="rank-desc">Two separate pairs</div></div>
+    <div class="rank-item"><div class="rank-name">9. One Pair</div><div class="rank-desc">Two cards of same rank</div></div>
+    <div class="rank-item"><div class="rank-name">10. High Card</div><div class="rank-desc">No matching cards</div></div>
+  </div>
+  <hr class="divider">
+  <div class="section-title">Texas Hold'em Quick Guide</div>
+  <div style="max-width:600px;margin:0 auto;font-size:0.88rem;color:#c8c0ee;line-height:1.8;background:#16213e;border-radius:8px;padding:16px;border:1px solid #2a2a4a">
+    <p>Each player gets 2 private hole cards. 5 community cards dealt in stages:</p>
+    <p><b style="color:#e94560">Flop</b>: 3 community cards revealed</p>
+    <p><b style="color:#e94560">Turn</b>: 4th community card</p>
+    <p><b style="color:#e94560">River</b>: 5th community card</p>
+    <p>Make best 5-card hand from any combination of your 2 + the 5 community cards.</p>
+    <hr class="divider" style="margin:8px 0">
+    <p><b>Premium hands pre-flop:</b> AA, KK, QQ, AKs, JJ, TT, AKo</p>
+    <p><b>Position matters:</b> acting last (button) is a big advantage</p>
+    <p><b>Pot odds:</b> compare call size to pot size — if reward outweighs risk, call</p>
+  </div>
+</div>
+
+<script>
+// ===== CARD ENGINE =====
+const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+const SUITS = ['spades','hearts','diamonds','clubs'];
+const SUIT_SYMS = {spades:'♠',hearts:'♥',diamonds:'♦',clubs:'♣'};
+const SUIT_COLORS = {spades:'black',hearts:'red',diamonds:'red',clubs:'black'};
+const RANK_VAL = {'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'J':11,'Q':12,'K':13,'A':14};
+
+function makeDeck() {
+  const d = [];
+  for (const s of SUITS) for (const r of RANKS) d.push({r, s});
+  return d;
+}
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function renderCard(card, small) {
+  const el = document.createElement('div');
+  el.className = 'card ' + SUIT_COLORS[card.s] + (small ? ' small' : '');
+  const sym = SUIT_SYMS[card.s];
+  const tl = document.createElement('div'); tl.className = 'corner tl';
+  tl.innerHTML = '<span>'+card.r+'</span><span>'+sym+'</span>';
+  const br = document.createElement('div'); br.className = 'corner br';
+  br.innerHTML = '<span>'+card.r+'</span><span>'+sym+'</span>';
+  const center = document.createElement('div');
+  center.style.fontSize = small ? '1.2rem' : '1.8rem';
+  center.textContent = sym;
+  el.append(tl, center, br);
+  return el;
+}
+
+// ===== HAND EVALUATOR =====
+function rv(card) { return RANK_VAL[card.r]; }
+
+function getCombos(arr, k) {
+  const out = [];
+  function go(start, cur) {
+    if (cur.length === k) { out.push([...cur]); return; }
+    for (let i = start; i < arr.length; i++) { cur.push(arr[i]); go(i+1, cur); cur.pop(); }
+  }
+  go(0, []);
+  return out;
+}
+
+function cmpTb(a, b) {
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    if ((a[i]||0) > (b[i]||0)) return 1;
+    if ((a[i]||0) < (b[i]||0)) return -1;
+  }
+  return 0;
+}
+
+function evalFive(cards) {
+  const vals = cards.map(rv).sort((a,b) => b-a);
+  const suitArr = cards.map(c => c.s);
+  const isFlush = suitArr.every(s => s === suitArr[0]);
+  const isStraight = checkStraight(vals);
+  const cnt = {};
+  for (const v of vals) cnt[v] = (cnt[v]||0)+1;
+  const grp = Object.entries(cnt).sort((a,b) => b[1]-a[1] || b[0]-a[0]);
+  const freq = grp.map(x => +x[1]);
+  const fv = grp.map(x => +x[0]);
+
+  if (isFlush && isStraight && vals[0]===14 && vals[4]===10) return {name:'Royal Flush',rank:9,tb:[14]};
+  if (isFlush && isStraight) return {name:'Straight Flush',rank:8,tb:[isStraight]};
+  if (freq[0]===4) return {name:'Four of a Kind',rank:7,tb:[fv[0],fv[1]]};
+  if (freq[0]===3 && freq[1]===2) return {name:'Full House',rank:6,tb:[fv[0],fv[1]]};
+  if (isFlush) return {name:'Flush',rank:5,tb:vals};
+  if (isStraight) return {name:'Straight',rank:4,tb:[isStraight]};
+  if (freq[0]===3) return {name:'Three of a Kind',rank:3,tb:[fv[0],...vals.filter(v=>v!==fv[0])]};
+  if (freq[0]===2 && freq[1]===2) return {name:'Two Pair',rank:2,tb:[Math.max(fv[0],fv[1]),Math.min(fv[0],fv[1]),fv[2]]};
+  if (freq[0]===2) return {name:'One Pair',rank:1,tb:[fv[0],...vals.filter(v=>v!==fv[0])]};
+  return {name:'High Card',rank:0,tb:vals};
+}
+
+function checkStraight(sortedVals) {
+  const uniq = [...new Set(sortedVals)];
+  if (uniq.length < 5) return false;
+  // Check for A-2-3-4-5 wheel
+  if (uniq.includes(14) && uniq.includes(2) && uniq.includes(3) && uniq.includes(4) && uniq.includes(5)) return 5;
+  for (let i = 0; i <= uniq.length-5; i++)
+    if (uniq[i]-uniq[i+4] === 4) return uniq[i];
+  return false;
+}
+
+function evalHand(cards) {
+  if (cards.length > 5) {
+    let best = null;
+    for (const c of getCombos(cards, 5)) {
+      const h = evalFive(c);
+      if (!best || h.rank > best.rank || (h.rank === best.rank && cmpTb(h.tb, best.tb) > 0)) best = h;
+    }
+    return best;
+  }
+  return evalFive(cards);
+}
+
+// ===== STATE =====
+let idScore=0, idStreak=0, idTotal=0, currentIdHand=null;
+let heScore=0, heStreak=0, heHole=[], heCommunity=[], hePending=true;
+let oddsHole=[], oddsCommunity=[];
+
+function switchMode(mode) {
+  document.querySelectorAll('.tab').forEach(t => t.className = 'tab');
+  document.querySelectorAll('.mode-panel').forEach(p => p.className = 'mode-panel');
+  const modes = ['identifier','holdem','odds','rules'];
+  document.querySelectorAll('.tab')[modes.indexOf(mode)].className = 'tab active';
+  document.getElementById('mode-'+mode).className = 'mode-panel active';
+}
+
+// ===== HAND IDENTIFIER =====
+function dealIdentifier() {
+  const deck = shuffle(makeDeck());
+  currentIdHand = deck.slice(0, 5);
+  const area = document.getElementById('id-cards'); area.innerHTML = '';
+  for (const c of currentIdHand) area.appendChild(renderCard(c, false));
+  document.getElementById('id-feedback').textContent = '';
+  document.getElementById('id-feedback').className = 'feedback';
+}
+
+function guessHand(guess) {
+  if (!currentIdHand) return;
+  const result = evalHand(currentIdHand);
+  idTotal++;
+  const correct = guess === result.name;
+  if (correct) {
+    idScore += 10 + idStreak * 2; idStreak++;
+    const pts = 10 + (idStreak-1)*2;
+    setFeedback('id-feedback', true, 'Correct! ' + result.name + ' +' + pts + ' pts' + (idStreak > 2 ? ' Fire Streak x'+idStreak : ''));
+  } else {
+    idStreak = 0;
+    setFeedback('id-feedback', false, 'Wrong! It was: ' + result.name);
+  }
+  document.getElementById('id-score').textContent = idScore;
+  document.getElementById('id-streak').textContent = idStreak;
+  document.getElementById('id-total').textContent = idTotal;
+  setTimeout(dealIdentifier, 1900);
+}
+
+// ===== HOLD'EM TRAINER =====
+function dealHoldem() {
+  const deck = shuffle(makeDeck());
+  heHole = deck.slice(0, 2);
+  heCommunity = deck.slice(2, 5);
+  hePending = true;
+  const ha = document.getElementById('he-hole'); ha.innerHTML = '';
+  for (const c of heHole) ha.appendChild(renderCard(c, false));
+  const ca = document.getElementById('he-community'); ca.innerHTML = '';
+  for (const c of heCommunity) ca.appendChild(renderCard(c, false));
+  const best = evalHand([...heHole, ...heCommunity]);
+  document.getElementById('he-hand-display').textContent = 'Best hand so far: ' + best.name;
+  document.getElementById('he-feedback').textContent = '';
+  document.getElementById('he-feedback').className = 'feedback';
+}
+
+function getHeAdvice() {
+  const best = evalHand([...heHole, ...heCommunity]);
+  const rk = best.rank;
+  const hv = heHole.map(rv);
+  const maxH = Math.max(...hv);
+  const suited = heHole[0].s === heHole[1].s;
+  const rankNames = ['','','2s','3s','4s','5s','6s','7s','8s','9s','10s','Jacks','Queens','Kings','Aces'];
+
+  if (rk >= 6) return {action:'raise', reason: 'You have ' + best.name + ' — very strong! Raise to build the pot.'};
+  if (rk === 5) return {action:'raise', reason: 'Flush! Raise confidently.'};
+  if (rk === 4) return {action:'raise', reason: 'Straight — raise for value.'};
+  if (rk === 3) return {action:'raise', reason: 'Three of a kind is strong. Raise.'};
+  if (rk === 2) {
+    if (best.tb[0] >= 10) return {action:'raise', reason: 'Two pair with high cards — raise for value.'};
+    return {action:'call', reason: 'Two pair, moderate strength. Call and see turn.'};
+  }
+  if (rk === 1) {
+    const pv = best.tb[0];
+    if (pv >= 12) return {action:'raise', reason: 'Top pair ' + (rankNames[pv]||'') + ' — raise.'};
+    if (pv >= 9) return {action:'call', reason: 'Middle pair. Call cautiously.'};
+    return {action:'fold', reason: 'Weak pair. Fold if facing heavy action.'};
+  }
+  if (maxH >= 14 && suited) return {action:'call', reason: 'Ace high suited — call for draw potential.'};
+  if (maxH >= 13) return {action:'call', reason: 'High card K/A — call if it is cheap.'};
+  return {action:'fold', reason: 'Weak high card on flop. Fold.'};
+}
+
+function heAction(action) {
+  if (!hePending) return;
+  hePending = false;
+  const advice = getHeAdvice();
+  const correct = action === advice.action;
+  if (correct) {
+    heScore += 10 + heStreak * 2; heStreak++;
+    setFeedback('he-feedback', true, 'Good play! ' + advice.reason + (heStreak > 2 ? ' Fire Streak x'+heStreak : ''));
+  } else {
+    heStreak = 0;
+    setFeedback('he-feedback', false, 'Suggested: ' + advice.action.toUpperCase() + '. ' + advice.reason);
+  }
+  document.getElementById('he-score').textContent = heScore;
+  document.getElementById('he-streak').textContent = heStreak;
+}
+
+// ===== ODDS CALCULATOR =====
+function dealOdds() {
+  const deck = shuffle(makeDeck());
+  oddsHole = deck.slice(0, 2);
+  oddsCommunity = deck.slice(2, 5);
+  const ha = document.getElementById('odds-hole'); ha.innerHTML = '';
+  for (const c of oddsHole) ha.appendChild(renderCard(c, true));
+  const ca = document.getElementById('odds-community'); ca.innerHTML = '';
+  for (const c of oddsCommunity) ca.appendChild(renderCard(c, true));
+  document.getElementById('odds-value').textContent = '--';
+  document.getElementById('odds-fill').style.width = '0';
+  document.getElementById('odds-breakdown').textContent = 'Click "Calculate Odds" to run simulation';
+}
+
+function calcOdds() {
+  if (!oddsHole.length) return;
+  const used = new Set([...oddsHole, ...oddsCommunity].map(c => c.r+'|'+c.s));
+  const remaining = makeDeck().filter(c => !used.has(c.r+'|'+c.s));
+  const TRIALS = 500;
+  let wins = 0, ties = 0;
+  for (let i = 0; i < TRIALS; i++) {
+    const d = shuffle(remaining);
+    const board = [...oddsCommunity, d[0], d[1]];
+    const opp = [d[2], d[3]];
+    const pb = evalHand([...oddsHole, ...board]);
+    const ob = evalHand([...opp, ...board]);
+    if (pb.rank > ob.rank) wins++;
+    else if (pb.rank === ob.rank) {
+      const c = cmpTb(pb.tb, ob.tb);
+      if (c > 0) wins++;
+      else if (c === 0) ties++;
+    }
+  }
+  const winPct = Math.round(wins/TRIALS*100);
+  const tiePct = Math.round(ties/TRIALS*100);
+  const losePct = 100-winPct-tiePct;
+  document.getElementById('odds-value').textContent = winPct + '%';
+  document.getElementById('odds-fill').style.width = winPct + '%';
+  const cur = evalHand([...oddsHole, ...oddsCommunity]);
+  document.getElementById('odds-breakdown').innerHTML =
+    'Win: <b>' + winPct + '%</b> | Tie: <b>' + tiePct + '%</b> | Lose: <b>' + losePct + '%</b><br>' +
+    'Current best hand: <b style="color:#e94560">' + cur.name + '</b>';
+}
+
+function setFeedback(id, correct, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'feedback ' + (correct ? 'correct' : 'wrong');
+}
+
+// Init all modes
+dealIdentifier();
+dealHoldem();
+dealOdds();
+</script>
+</body>
+</html>
