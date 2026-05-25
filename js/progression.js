@@ -16,6 +16,8 @@ class ProgressionSystem {
     this.bestTime = null;
     this.bestScore = 0;
     this.dailiesCompleted = new Set();
+    this._themesUsed = new Set();   // was missing — caused TypeError on first load
+    this._winStreak = 0;            // was missing — caused NaN on first win
 
     this.RANKS = [
       { minLevel: 1, name: 'Bronze I' },

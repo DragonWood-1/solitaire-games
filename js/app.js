@@ -1459,5 +1459,16 @@ class App {
 document.addEventListener('DOMContentLoaded', async () => {
   const app = new App();
   window._app = app; // expose for debugging
-  await app.init();
+  try {
+    await app.init();
+  } catch (err) {
+    console.error('[SolitaireRealm] init failed:', err);
+    // Always unblock the loading screen so the user isn't stuck
+    const screen = document.getElementById('loading-screen');
+    const appEl  = document.getElementById('app');
+    if (screen) screen.style.display = 'none';
+    if (appEl)  appEl.style.display  = 'flex';
+    // Try a bare render so the board is at least visible
+    try { app.renderer.renderAll(); } catch(e) {}
+  }
 });
