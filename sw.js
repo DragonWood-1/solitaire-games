@@ -15,7 +15,11 @@ const ASSETS_TO_CACHE = [
   '/js/storage.js',
   '/js/keyboard.js',
   '/js/app.js',
-  '/assets/icons/icon.svg',
+  '/assets/icons/icon.svg'
+];
+
+// Games are cached on first visit (not pre-cached to avoid install failure)
+const GAMES_TO_CACHE = [
   '/games/chess.html',
   '/games/sudoku.html',
   '/games/mahjong.html',
