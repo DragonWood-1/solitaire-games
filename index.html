@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="SolitaireRealm - Beautiful Klondike Solitaire with themes, achievements, and more">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SolitaireRealm">
+  <title>SolitaireRealm - Classic Klondike Solitaire</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/assets/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/icons/icon.svg">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/themes.css">
+</head>
+<body class="theme-cyberpunk">
+
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-content">
+      <div class="loading-logo">
+        <span class="loading-logo-sr">SR</span>
+        <span class="loading-logo-title">SolitaireRealm</span>
+      </div>
+      <div class="loading-cards">
+        <div class="loading-card loading-card-1">♠</div>
+        <div class="loading-card loading-card-2">♥</div>
+        <div class="loading-card loading-card-3">♦</div>
+        <div class="loading-card loading-card-4">♣</div>
+      </div>
+      <div class="loading-bar-container">
+        <div class="loading-bar" id="loading-bar"></div>
+      </div>
+      <p class="loading-text">Shuffling the deck...</p>
+    </div>
+  </div>
+
+  <!-- Ambient Canvas Layer -->
+  <canvas id="ambient-canvas" class="ambient-canvas" aria-hidden="true"></canvas>
+
+  <!-- Main App -->
+  <div id="app" class="app" style="display:none">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar" role="complementary" aria-label="Player menu">
+      <div class="sidebar-header">
+        <button class="sidebar-close btn-icon" id="sidebar-close" aria-label="Close menu">✕</button>
+        <div class="sidebar-player">
+          <div class="player-avatar" aria-hidden="true">
+            <span class="player-avatar-icon">♠</span>
+          </div>
+          <div class="player-info">
+            <div class="player-name">Player</div>
+            <div class="player-rank" id="sidebar-rank">Bronze I</div>
+          </div>
+        </div>
+        <div class="sidebar-xp">
+          <div class="sidebar-level">Level <span id="sidebar-level">1</span></div>
+          <div class="xp-bar-full">
+            <div class="xp-bar-fill" id="sidebar-xp-fill" style="width:0%"></div>
+          </div>
+          <div class="xp-label"><span id="sidebar-xp-current">0</span> / <span id="sidebar-xp-needed">150</span> XP</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-nav-item active" id="nav-play" aria-current="page">
+          <span class="nav-icon">🃏</span> Play
+        </button>
+        <button class="sidebar-nav-item" id="nav-daily">
+          <span class="nav-icon">📅</span> Daily Challenge
+          <span class="nav-badge" id="daily-badge">!</span>
+        </button>
+        <button class="sidebar-nav-item" id="nav-achievements">
+          <span class="nav-icon">🏆</span> Achievements
+        </button>
+        <button class="sidebar-nav-item" id="nav-stats">
+          <span class="nav-icon">📊</span> Statistics
+        </button>
+      </nav>
+      <div class="sidebar-streak">
+        <span class="streak-icon">🔥</span>
+        <span class="streak-label">Day Streak:</span>
+        <span class="streak-value" id="sidebar-streak">0</span>
+      </div>
+    </aside>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <!-- Header -->
+    <header class="header" role="banner">
+      <div class="header-left">
+        <button class="btn-icon menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false">
+          <span class="hamburger">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+        <div class="logo" aria-label="SolitaireRealm">
+          <span class="logo-sr">SR</span>
+          <span class="logo-text">SolitaireRealm</span>
+        </div>
+      </div>
+      <div class="header-stats" role="status" aria-live="polite">
+        <div class="stat-item" title="Score">
+          <span class="stat-icon">⭐</span>
+          <span class="stat-value" id="stat-score">0</span>
+        </div>
+        <div class="stat-item" title="Time">
+          <span class="stat-icon">⏱</span>
+          <span class="stat-value" id="stat-time">0:00</span>
+        </div>
+        <div class="stat-item" title="Moves">
+          <span class="stat-icon">↕</span>
+          <span class="stat-value" id="stat-moves">0</span>
+        </div>
+      </div>
+      <div class="header-xp" title="Experience">
+        <span class="header-level" id="header-level">Lv.1</span>
+        <div class="xp-bar-mini" role="progressbar" aria-label="XP progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div class="xp-bar-mini-fill" id="xp-bar-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="btn-icon" id="theme-btn" aria-label="Change theme" title="Theme (T)">🎨</button>
+        <button class="btn-icon" id="settings-btn" aria-label="Settings" title="Settings">⚙️</button>
+        <button class="btn-icon" id="help-btn" aria-label="Keyboard shortcuts" title="Help (?)">?</button>
+      </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="game-area" role="main">
+
+      <!-- Game Board -->
+      <div class="game-board" id="game-board" role="region" aria-label="Game board">
+
+        <!-- Top Row: Stock, Waste, Foundations -->
+        <div class="top-row">
+          <!-- Stock Pile -->
+          <div class="pile pile-stock" id="pile-stock" role="button" tabindex="0" aria-label="Stock pile - click to draw" data-pile-type="stock">
+            <div class="pile-placeholder">
+              <span class="pile-placeholder-icon">↺</span>
+            </div>
+          </div>
+
+          <!-- Waste Pile -->
+          <div class="pile pile-waste" id="pile-waste" role="region" aria-label="Waste pile" data-pile-type="waste">
+            <div class="pile-placeholder">
+              <span class="pile-placeholder-icon"></span>
+            </div>
+          </div>
+
+          <!-- Gap -->
+          <div class="top-row-gap"></div>
+
+          <!-- Foundation Piles -->
+          <div class="pile pile-foundation" id="pile-foundation-0" role="region" aria-label="Spades foundation" data-pile-type="foundation" data-pile-index="0">
+            <div class="pile-placeholder"><span class="pile-placeholder-suit">♠</span></div>
+          </div>
+          <div class="pile pile-foundation" id="pile-foundation-1" role="region" aria-label="Hearts foundation" data-pile-type="foundation" data-pile-index="1">
+            <div class="pile-placeholder"><span class="pile-placeholder-suit red">♥</span></div>
+          </div>
+          <div class="pile pile-foundation" id="pile-foundation-2" role="region" aria-label="Diamonds foundation" data-pile-type="foundation" data-pile-index="2">
+            <div class="pile-placeholder"><span class="pile-placeholder-suit red">♦</span></div>
+          </div>
+          <div class="pile pile-foundation" id="pile-foundation-3" role="region" aria-label="Clubs foundation" data-pile-type="foundation" data-pile-index="3">
+            <div class="pile-placeholder"><span class="pile-placeholder-suit">♣</span></div>
+          </div>
+        </div>
+
+        <!-- Tableau Columns -->
+        <div class="tableau" id="tableau" role="region" aria-label="Tableau">
+          <div class="pile pile-tableau" id="pile-tableau-0" role="region" aria-label="Tableau column 1" data-pile-type="tableau" data-pile-index="0"><div class="pile-placeholder"><span class="pile-placeholder-icon">K</span></div></div>
+          <div class="pile pile-tableau" id="pile-tableau-1" role="region" aria-label="Tableau column 2" data-pile-type="tableau" data-pile-index="1"><div class="pile-placeholder"><span class="pile-placeholder-icon">K</span></div></div>
+          <div class="pile pile-tableau" id="pile-tableau-2" role="region" aria-label="Tableau column 3" data-pile-type="tableau" data-pile-index="2"><div class="pile-placeholder"><span class="pile-placeholder-icon">K</span></div></div>
+          <div class="pile pile-tableau" id="pile-tableau-3" role="region" aria-label="Tableau column 4" data-pile-type="tableau" data-pile-index="3"><div class="pile-placeholder"><span class="pile-placeholder-icon">K</span></div></div>
+          <div class="pile pile-tableau" id="pile-tableau-4" role="region" aria-label="Tableau column 5" data-pile-type="tableau" data-pile-index="4"><div class="pile-placeholder"><span class="pile-placeholder-icon">K</span></div></div>
+          <div class="pile pile-tableau" id="pile-tableau-5" role="region" aria-label="Tableau column 6" data-pile-type="tableau" data-pile-index="5"><div class="pile-placeholder"><span class="pile-placeholder-icon">K</span></div></div>
+          <div class="pile pile-tableau" id="pile-tableau-6" role="region" aria-label="Tableau column 7" data-pile-type="tableau" data-pile-index="6"><div class="pile-placeholder"><span class="pile-placeholder-icon">K</span></div></div>
+        </div>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="action-bar" role="toolbar" aria-label="Game controls">
+        <button class="btn btn-primary" id="btn-new-game" title="New Game (N)">
+          <span class="btn-icon-inner">🃏</span> New Game
+        </button>
+        <button class="btn btn-secondary" id="btn-undo" title="Undo (Ctrl+Z / U)" disabled>
+          <span class="btn-icon-inner">↩</span> Undo
+        </button>
+        <button class="btn btn-secondary" id="btn-hint" title="Hint (H)">
+          <span class="btn-icon-inner">💡</span> Hint
+        </button>
+        <button class="btn btn-secondary" id="btn-auto-complete" title="Auto Complete (A)" disabled>
+          <span class="btn-icon-inner">✨</span> Auto
+        </button>
+        <button class="btn btn-secondary" id="btn-sound" title="Toggle Sound (M)">
+          <span class="btn-icon-inner" id="sound-icon">🔊</span>
+        </button>
+      </div>
+
+      <!-- AI Coach Panel -->
+      <div class="ai-coach" id="ai-coach" role="complementary" aria-label="AI Coach">
+        <button class="ai-coach-toggle" id="ai-coach-toggle" aria-expanded="false">
+          <span class="ai-icon">🤖</span> AI Coach
+          <span class="ai-toggle-arrow">▼</span>
+        </button>
+        <div class="ai-coach-body" id="ai-coach-body" hidden>
+          <div class="ai-message" id="ai-message">
+            <p>Start a game and I'll analyze your position!</p>
+          </div>
+          <div class="ai-stats">
+            <div class="ai-stat">
+              <span class="ai-stat-label">Efficiency</span>
+              <div class="ai-efficiency-bar">
+                <div class="ai-efficiency-fill" id="ai-efficiency-fill" style="width:0%"></div>
+              </div>
+              <span class="ai-stat-value" id="ai-efficiency-val">-</span>
+            </div>
+            <div class="ai-stat ai-deadlock" id="ai-deadlock-warning" hidden>
+              ⚠️ Position may be deadlocked
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Win Modal -->
+    <div class="modal-overlay" id="win-modal" role="dialog" aria-modal="true" aria-labelledby="win-title" hidden>
+      <div class="modal win-modal">
+        <div class="win-celebration" id="win-celebration" aria-hidden="true"></div>
+        <h2 class="win-title" id="win-title">🎉 You Win!</h2>
+        <div class="win-stats">
+          <div class="win-stat">
+            <span class="win-stat-icon">⭐</span>
+            <span class="win-stat-label">Score</span>
+            <span class="win-stat-value" id="win-score">0</span>
+          </div>
+          <div class="win-stat">
+            <span class="win-stat-icon">⏱</span>
+            <span class="win-stat-label">Time</span>
+            <span class="win-stat-value" id="win-time">0:00</span>
+          </div>
+          <div class="win-stat">
+            <span class="win-stat-icon">↕</span>
+            <span class="win-stat-label">Moves</span>
+            <span class="win-stat-value" id="win-moves">0</span>
+          </div>
+          <div class="win-stat">
+            <span class="win-stat-icon">✨</span>
+            <span class="win-stat-label">XP Earned</span>
+            <span class="win-stat-value" id="win-xp">0</span>
+          </div>
+        </div>
+        <div class="win-level-up" id="win-level-up" hidden>
+          <span class="level-up-text">Level Up! ⬆️</span>
+          <span class="level-up-new" id="win-new-level">Level 2</span>
+        </div>
+        <div class="win-actions">
+          <button class="btn btn-primary" id="win-play-again">🃏 Play Again</button>
+          <button class="btn btn-secondary" id="win-share">📤 Share</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme Picker Modal -->
+    <div class="modal-overlay" id="theme-modal" role="dialog" aria-modal="true" aria-labelledby="theme-title" hidden>
+      <div class="modal theme-modal">
+        <div class="modal-header">
+          <h2 id="theme-title">🎨 Choose Theme</h2>
+          <button class="btn-icon modal-close" data-modal="theme-modal" aria-label="Close">✕</button>
+        </div>
+        <div class="theme-grid" id="theme-grid" role="listbox" aria-label="Theme options">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+      <div class="modal settings-modal">
+        <div class="modal-header">
+          <h2 id="settings-title">⚙️ Settings</h2>
+          <button class="btn-icon modal-close" data-modal="settings-modal" aria-label="Close">✕</button>
+        </div>
+        <div class="settings-body">
+          <div class="setting-group">
+            <label class="setting-label">Draw Mode</label>
+            <div class="btn-group" role="group" aria-label="Draw mode">
+              <button class="btn btn-option active" id="draw-mode-1" data-value="1">Draw 1</button>
+              <button class="btn btn-option" id="draw-mode-3" data-value="3">Draw 3</button>
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Scoring</label>
+            <div class="btn-group" role="group" aria-label="Scoring mode">
+              <button class="btn btn-option active" id="scoring-standard" data-value="standard">Standard</button>
+              <button class="btn btn-option" id="scoring-vegas" data-value="vegas">Vegas</button>
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label" for="autoflip-toggle">Auto-Flip Cards</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="autoflip-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label" for="lefthanded-toggle">Left-Handed Mode</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="lefthanded-toggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Animation Speed</label>
+            <div class="btn-group" role="group" aria-label="Animation speed">
+              <button class="btn btn-option" id="anim-slow" data-value="slow">Slow</button>
+              <button class="btn btn-option active" id="anim-normal" data-value="normal">Normal</button>
+              <button class="btn btn-option" id="anim-fast" data-value="fast">Fast</button>
+              <button class="btn btn-option" id="anim-none" data-value="none">None</button>
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label" for="sound-toggle">Sound Effects</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="sound-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label" for="volume-slider">Volume</label>
+            <input type="range" id="volume-slider" min="0" max="100" value="70" class="volume-slider">
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Ambient Sound</label>
+            <div class="btn-group btn-group-wrap" role="group" aria-label="Ambient sound">
+              <button class="btn btn-option active" id="ambient-none" data-value="none">None</button>
+              <button class="btn btn-option" id="ambient-rain" data-value="rain">🌧 Rain</button>
+              <button class="btn btn-option" id="ambient-fire" data-value="fire">🔥 Fire</button>
+              <button class="btn btn-option" id="ambient-lofi" data-value="lofi">🎵 Lo-Fi</button>
+            </div>
+          </div>
+          <div class="setting-group">
+            <button class="btn btn-danger" id="clear-data-btn">Clear All Data</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievements Modal -->
+    <div class="modal-overlay" id="achievements-modal" role="dialog" aria-modal="true" aria-labelledby="achievements-title" hidden>
+      <div class="modal achievements-modal">
+        <div class="modal-header">
+          <h2 id="achievements-title">🏆 Achievements</h2>
+          <button class="btn-icon modal-close" data-modal="achievements-modal" aria-label="Close">✕</button>
+        </div>
+        <div class="achievements-list" id="achievements-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div class="modal-overlay" id="stats-modal" role="dialog" aria-modal="true" aria-labelledby="stats-title" hidden>
+      <div class="modal stats-modal">
+        <div class="modal-header">
+          <h2 id="stats-title">📊 Statistics</h2>
+          <button class="btn-icon modal-close" data-modal="stats-modal" aria-label="Close">✕</button>
+        </div>
+        <div class="stats-grid" id="stats-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Challenge Modal -->
+    <div class="modal-overlay" id="daily-modal" role="dialog" aria-modal="true" aria-labelledby="daily-title" hidden>
+      <div class="modal daily-modal">
+        <div class="modal-header">
+          <h2 id="daily-title">📅 Daily Challenge</h2>
+          <button class="btn-icon modal-close" data-modal="daily-modal" aria-label="Close">✕</button>
+        </div>
+        <div class="daily-body">
+          <div class="daily-date" id="daily-date"></div>
+          <div class="daily-status" id="daily-status"></div>
+          <div class="daily-actions">
+            <button class="btn btn-primary" id="btn-daily-play">Play Today's Challenge</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="modal-overlay" id="keyboard-modal" role="dialog" aria-modal="true" aria-labelledby="keyboard-title" hidden>
+      <div class="modal keyboard-modal">
+        <div class="modal-header">
+          <h2 id="keyboard-title">⌨️ Keyboard Shortcuts</h2>
+          <button class="btn-icon modal-close" data-modal="keyboard-modal" aria-label="Close">✕</button>
+        </div>
+        <div class="shortcuts-list">
+          <div class="shortcut-item"><kbd>N</kbd><span>New Game</span></div>
+          <div class="shortcut-item"><kbd>Space</kbd><span>Draw from Stock</span></div>
+          <div class="shortcut-item"><kbd>Ctrl+Z</kbd> / <kbd>U</kbd><span>Undo</span></div>
+          <div class="shortcut-item"><kbd>Ctrl+Y</kbd><span>Redo</span></div>
+          <div class="shortcut-item"><kbd>H</kbd><span>Hint</span></div>
+          <div class="shortcut-item"><kbd>A</kbd><span>Auto Complete</span></div>
+          <div class="shortcut-item"><kbd>M</kbd><span>Toggle Sound</span></div>
+          <div class="shortcut-item"><kbd>T</kbd><span>Cycle Themes</span></div>
+          <div class="shortcut-item"><kbd>1–7</kbd><span>Select Tableau Column</span></div>
+          <div class="shortcut-item"><kbd>Enter</kbd><span>Auto-Move Selected Card</span></div>
+          <div class="shortcut-item"><kbd>Esc</kbd><span>Deselect / Close Modal</span></div>
+          <div class="shortcut-item"><kbd>?</kbd><span>Show This Help</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievement Toast -->
+    <div class="achievement-toast" id="achievement-toast" role="alert" aria-live="polite" hidden>
+      <div class="achievement-toast-inner">
+        <span class="achievement-toast-icon" id="achievement-toast-icon">🏆</span>
+        <div class="achievement-toast-text">
+          <div class="achievement-toast-label">Achievement Unlocked!</div>
+          <div class="achievement-toast-name" id="achievement-toast-name">First Win</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drag Ghost -->
+    <div id="drag-ghost" class="drag-ghost" aria-hidden="true"></div>
+
+  </div><!-- /app -->
+
+  <!-- Scripts -->
+  <script src="/js/card.js"></script>
+  <script src="/js/game.js"></script>
+  <script src="/js/renderer.js"></script>
+  <script src="/js/drag.js"></script>
+  <script src="/js/audio.js"></script>
+  <script src="/js/themes.js"></script>
+  <script src="/js/progression.js"></script>
+  <script src="/js/storage.js"></script>
+  <script src="/js/keyboard.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

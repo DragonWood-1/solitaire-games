@@ -1,0 +1,485 @@
+/* SolitaireRealm - Themes CSS */
+/* ============================================
+   1. Cyberpunk (default)
+   ============================================ */
+.theme-cyberpunk {
+  --bg-primary: #0d0d1a;
+  --bg-secondary: #12122a;
+  --card-bg: #f0f0ff;
+  --card-bg-back: #1a0a3e;
+  --card-border: rgba(180, 100, 255, 0.3);
+  --card-shadow: 0 4px 12px rgba(180,100,255,0.3), 0 2px 4px rgba(0,0,0,0.5);
+  --text-primary: #e8e0ff;
+  --text-secondary: #9080b0;
+  --accent: #e94560;
+  --accent-glow: rgba(233, 69, 96, 0.5);
+  --pile-bg: rgba(180, 100, 255, 0.05);
+  --pile-border: rgba(180, 100, 255, 0.25);
+  --header-bg: rgba(10, 8, 25, 0.95);
+  --modal-bg: #14123a;
+  --sidebar-bg: #0e0c24;
+  --xp-bar-fill: #e94560;
+  --btn-primary-bg: #e94560;
+}
+
+.theme-cyberpunk .card-back::after {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(180, 100, 255, 0.06) 0px,
+      rgba(180, 100, 255, 0.06) 1px,
+      transparent 1px,
+      transparent 6px
+    );
+}
+
+.theme-cyberpunk .logo-sr {
+  text-shadow: 0 0 20px rgba(233, 69, 96, 0.8), 0 0 40px rgba(233, 69, 96, 0.4);
+}
+
+/* ============================================
+   2. Medieval
+   ============================================ */
+.theme-medieval {
+  --bg-primary: #1e1208;
+  --bg-secondary: #2a1a0a;
+  --card-bg: #f5e6c8;
+  --card-bg-back: #3d2008;
+  --card-border: rgba(180, 110, 20, 0.4);
+  --card-shadow: 0 4px 12px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.4);
+  --text-primary: #f0e0c0;
+  --text-secondary: #a08060;
+  --accent: #c87020;
+  --accent-glow: rgba(200, 112, 32, 0.4);
+  --pile-bg: rgba(180, 110, 20, 0.07);
+  --pile-border: rgba(180, 110, 20, 0.3);
+  --header-bg: rgba(20, 12, 4, 0.95);
+  --modal-bg: #251508;
+  --sidebar-bg: #1a0e04;
+  --xp-bar-fill: #c87020;
+  --btn-primary-bg: #c87020;
+}
+
+.theme-medieval .card-back {
+  background: #3d2008;
+  border-color: rgba(200, 140, 40, 0.4);
+}
+
+.theme-medieval .card-back::after {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(200, 140, 40, 0.08) 0px,
+    rgba(200, 140, 40, 0.08) 1px,
+    transparent 1px,
+    transparent 10px
+  ),
+  repeating-linear-gradient(
+    90deg,
+    rgba(200, 140, 40, 0.08) 0px,
+    rgba(200, 140, 40, 0.08) 1px,
+    transparent 1px,
+    transparent 10px
+  );
+}
+
+.theme-medieval .card-face {
+  background: #f5e6c8;
+}
+
+.theme-medieval .card.black .card-rank,
+.theme-medieval .card.black .card-suit-small,
+.theme-medieval .card.black .card-center { color: #2a1a0a; }
+
+/* ============================================
+   3. Zen
+   ============================================ */
+.theme-zen {
+  --bg-primary: #f0ede8;
+  --bg-secondary: #e8e4de;
+  --card-bg: #ffffff;
+  --card-bg-back: #5a8a6a;
+  --card-border: rgba(100, 140, 100, 0.3);
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);
+  --text-primary: #3a3530;
+  --text-secondary: #8a8070;
+  --accent: #5a8a6a;
+  --accent-glow: rgba(90, 138, 106, 0.3);
+  --pile-bg: rgba(90, 138, 106, 0.06);
+  --pile-border: rgba(90, 138, 106, 0.25);
+  --header-bg: rgba(240, 237, 232, 0.95);
+  --modal-bg: #f8f5f0;
+  --modal-overlay: rgba(0,0,0,0.4);
+  --sidebar-bg: #ece8e2;
+  --xp-bar-fill: #5a8a6a;
+  --btn-primary-bg: #5a8a6a;
+  --btn-secondary-bg: rgba(0,0,0,0.06);
+  --btn-secondary-text: #3a3530;
+  --action-bar-bg: rgba(240, 237, 232, 0.9);
+}
+
+.theme-zen body {
+  color: var(--text-primary);
+}
+
+.theme-zen .card-back {
+  background: linear-gradient(135deg, #5a8a6a, #3d6b50);
+}
+
+.theme-zen .card-back::after {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,0.1) 0px,
+    rgba(255,255,255,0.1) 1px,
+    transparent 1px,
+    transparent 8px
+  );
+}
+
+.theme-zen .card.red .card-rank,
+.theme-zen .card.red .card-suit-small,
+.theme-zen .card.red .card-center { color: #c0392b; }
+
+.theme-zen .card.black .card-rank,
+.theme-zen .card.black .card-suit-small,
+.theme-zen .card.black .card-center { color: #2c3e50; }
+
+.theme-zen .logo-sr { color: #5a8a6a; text-shadow: none; }
+
+/* ============================================
+   4. Space
+   ============================================ */
+.theme-space {
+  --bg-primary: #060614;
+  --bg-secondary: #0a0a20;
+  --card-bg: #e8e8f8;
+  --card-bg-back: #10103a;
+  --card-border: rgba(100, 160, 255, 0.25);
+  --card-shadow: 0 4px 16px rgba(50, 100, 200, 0.3);
+  --text-primary: #d8e0f8;
+  --text-secondary: #7080a0;
+  --accent: #4488ff;
+  --accent-glow: rgba(68, 136, 255, 0.4);
+  --pile-bg: rgba(68, 136, 255, 0.04);
+  --pile-border: rgba(68, 136, 255, 0.2);
+  --header-bg: rgba(4, 4, 18, 0.96);
+  --modal-bg: #0c0c28;
+  --sidebar-bg: #080820;
+  --xp-bar-fill: #4488ff;
+  --btn-primary-bg: #4488ff;
+}
+
+.theme-space .card-back {
+  background: linear-gradient(135deg, #10103a, #1a1a5e);
+}
+
+.theme-space .card-back::after {
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.08) 0px, transparent 1px) 0 0 / 8px 8px;
+}
+
+/* ============================================
+   5. Coffee
+   ============================================ */
+.theme-coffee {
+  --bg-primary: #1e140a;
+  --bg-secondary: #261a0e;
+  --card-bg: #fdf6ec;
+  --card-bg-back: #4a2e12;
+  --card-border: rgba(160, 100, 40, 0.3);
+  --card-shadow: 0 3px 10px rgba(0,0,0,0.4);
+  --text-primary: #ede0cc;
+  --text-secondary: #9a7d60;
+  --accent: #c8820a;
+  --accent-glow: rgba(200, 130, 10, 0.4);
+  --pile-bg: rgba(160, 100, 40, 0.07);
+  --pile-border: rgba(160, 100, 40, 0.25);
+  --header-bg: rgba(16, 10, 4, 0.96);
+  --modal-bg: #221608;
+  --sidebar-bg: #1a1006;
+  --xp-bar-fill: #c8820a;
+  --btn-primary-bg: #c8820a;
+}
+
+.theme-coffee .card-back {
+  background: linear-gradient(135deg, #4a2e12, #6a3e1a);
+}
+
+.theme-coffee .card-face { background: #fdf6ec; }
+
+.theme-coffee .card.black .card-rank,
+.theme-coffee .card.black .card-suit-small,
+.theme-coffee .card.black .card-center { color: #2a1808; }
+
+/* ============================================
+   6. Egypt
+   ============================================ */
+.theme-egypt {
+  --bg-primary: #0e0c05;
+  --bg-secondary: #1a1608;
+  --card-bg: #f8f0d8;
+  --card-bg-back: #2a2200;
+  --card-border: rgba(220, 180, 40, 0.4);
+  --card-shadow: 0 4px 14px rgba(220, 180, 40, 0.2), 0 2px 6px rgba(0,0,0,0.4);
+  --text-primary: #f0e8c0;
+  --text-secondary: #a09060;
+  --accent: #d4a017;
+  --accent-glow: rgba(212, 160, 23, 0.5);
+  --pile-bg: rgba(212, 160, 23, 0.06);
+  --pile-border: rgba(212, 160, 23, 0.3);
+  --header-bg: rgba(10, 8, 2, 0.96);
+  --modal-bg: #181400;
+  --sidebar-bg: #100e02;
+  --xp-bar-fill: #d4a017;
+  --btn-primary-bg: #d4a017;
+}
+
+.theme-egypt .card-back {
+  background: linear-gradient(135deg, #2a2200, #3d3300);
+  border-color: rgba(212, 160, 23, 0.4);
+}
+
+.theme-egypt .card-back::after {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(212, 160, 23, 0.07) 0px,
+    rgba(212, 160, 23, 0.07) 2px,
+    transparent 2px,
+    transparent 12px
+  );
+}
+
+.theme-egypt .card-face { background: #f8f0d8; }
+
+.theme-egypt .card.black .card-rank,
+.theme-egypt .card.black .card-suit-small,
+.theme-egypt .card.black .card-center { color: #1a1400; }
+
+/* ============================================
+   7. Pirate
+   ============================================ */
+.theme-pirate {
+  --bg-primary: #080e18;
+  --bg-secondary: #0c1520;
+  --card-bg: #f0e8d0;
+  --card-bg-back: #1a2a3a;
+  --card-border: rgba(180, 140, 40, 0.3);
+  --card-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  --text-primary: #d8c8a0;
+  --text-secondary: #7a6a50;
+  --accent: #d4921a;
+  --accent-glow: rgba(212, 146, 26, 0.4);
+  --pile-bg: rgba(180, 140, 40, 0.05);
+  --pile-border: rgba(180, 140, 40, 0.25);
+  --header-bg: rgba(4, 8, 14, 0.96);
+  --modal-bg: #0c1424;
+  --sidebar-bg: #08101c;
+  --xp-bar-fill: #d4921a;
+  --btn-primary-bg: #d4921a;
+}
+
+.theme-pirate .card-back {
+  background: linear-gradient(135deg, #1a2a3a, #0d1f30);
+}
+
+.theme-pirate .card-back::after {
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(180, 140, 40, 0.06) 0px, rgba(180, 140, 40, 0.06) 1px,
+      transparent 1px, transparent 14px
+    ),
+    repeating-linear-gradient(90deg,
+      rgba(180, 140, 40, 0.06) 0px, rgba(180, 140, 40, 0.06) 1px,
+      transparent 1px, transparent 14px
+    );
+}
+
+.theme-pirate .card-face { background: #f0e8d0; }
+
+.theme-pirate .card.black .card-rank,
+.theme-pirate .card.black .card-suit-small,
+.theme-pirate .card.black .card-center { color: #1a1208; }
+
+/* ============================================
+   8. Cabin
+   ============================================ */
+.theme-cabin {
+  --bg-primary: #1a1208;
+  --bg-secondary: #221808;
+  --card-bg: #faf4ec;
+  --card-bg-back: #3a2008;
+  --card-border: rgba(180, 100, 20, 0.3);
+  --card-shadow: 0 3px 10px rgba(0,0,0,0.4);
+  --text-primary: #ede0c8;
+  --text-secondary: #9a7a58;
+  --accent: #d46020;
+  --accent-glow: rgba(212, 96, 32, 0.4);
+  --pile-bg: rgba(180, 100, 20, 0.07);
+  --pile-border: rgba(180, 100, 20, 0.25);
+  --header-bg: rgba(14, 10, 4, 0.96);
+  --modal-bg: #201408;
+  --sidebar-bg: #161008;
+  --xp-bar-fill: #d46020;
+  --btn-primary-bg: #d46020;
+}
+
+.theme-cabin .card-back {
+  background: linear-gradient(135deg, #3a2008, #5a3010);
+}
+
+.theme-cabin .card-back::after {
+  background:
+    repeating-linear-gradient(0deg, rgba(255,200,100,0.07) 0px, rgba(255,200,100,0.07) 1px, transparent 1px, transparent 6px),
+    repeating-linear-gradient(90deg, rgba(255,200,100,0.07) 0px, rgba(255,200,100,0.07) 1px, transparent 1px, transparent 6px);
+}
+
+.theme-cabin .card-face { background: #faf4ec; }
+
+/* ============================================
+   9. Neon
+   ============================================ */
+.theme-neon {
+  --bg-primary: #050508;
+  --bg-secondary: #080810;
+  --card-bg: #f0f0f8;
+  --card-bg-back: #100020;
+  --card-border: rgba(255, 0, 200, 0.3);
+  --card-shadow: 0 4px 16px rgba(255, 0, 200, 0.3), 0 0 8px rgba(0, 255, 150, 0.2);
+  --text-primary: #f0f0ff;
+  --text-secondary: #8080a0;
+  --accent: #ff00cc;
+  --accent-glow: rgba(255, 0, 204, 0.5);
+  --pile-bg: rgba(255, 0, 200, 0.04);
+  --pile-border: rgba(255, 0, 200, 0.2);
+  --header-bg: rgba(2, 2, 8, 0.96);
+  --modal-bg: #0a0012;
+  --sidebar-bg: #060010;
+  --xp-bar-fill: linear-gradient(90deg, #ff00cc, #00ffaa);
+  --btn-primary-bg: #ff00cc;
+}
+
+.theme-neon .card-back {
+  background: linear-gradient(135deg, #100020, #200040);
+}
+
+.theme-neon .card-back::after {
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(255, 0, 200, 0.08) 0px, rgba(255, 0, 200, 0.08) 1px,
+      transparent 1px, transparent 8px
+    ),
+    repeating-linear-gradient(90deg,
+      rgba(0, 255, 150, 0.08) 0px, rgba(0, 255, 150, 0.08) 1px,
+      transparent 1px, transparent 8px
+    );
+}
+
+.theme-neon .logo-sr {
+  text-shadow: 0 0 10px #ff00cc, 0 0 20px #ff00cc, 0 0 40px rgba(255,0,204,0.4);
+}
+
+.theme-neon .xp-bar-mini-fill {
+  background: linear-gradient(90deg, #ff00cc, #00ffaa);
+}
+
+.theme-neon .xp-bar-fill {
+  background: linear-gradient(90deg, #ff00cc, #00ffaa);
+}
+
+/* ============================================
+   10. Ocean
+   ============================================ */
+.theme-ocean {
+  --bg-primary: #020e14;
+  --bg-secondary: #041820;
+  --card-bg: #f0f8fc;
+  --card-bg-back: #063040;
+  --card-border: rgba(60, 180, 200, 0.3);
+  --card-shadow: 0 4px 14px rgba(0, 120, 160, 0.3);
+  --text-primary: #d8f0f8;
+  --text-secondary: #608090;
+  --accent: #20b8c8;
+  --accent-glow: rgba(32, 184, 200, 0.4);
+  --pile-bg: rgba(32, 184, 200, 0.05);
+  --pile-border: rgba(32, 184, 200, 0.2);
+  --header-bg: rgba(2, 8, 14, 0.96);
+  --modal-bg: #041420;
+  --sidebar-bg: #020e18;
+  --xp-bar-fill: #20b8c8;
+  --btn-primary-bg: #20b8c8;
+}
+
+.theme-ocean .card-back {
+  background: linear-gradient(135deg, #063040, #0a4a60);
+}
+
+.theme-ocean .card-back::after {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(60, 180, 200, 0.06) 0px,
+    rgba(60, 180, 200, 0.06) 1px,
+    transparent 1px,
+    transparent 8px
+  );
+}
+
+/* ============================================
+   Theme Card Swatches (for theme picker)
+   ============================================ */
+.theme-card[data-theme="cyberpunk"] {
+  background: linear-gradient(135deg, #0d0d1a, #1a0a3e);
+  color: #e8e0ff;
+  border-color: rgba(180,100,255,0.3);
+}
+
+.theme-card[data-theme="medieval"] {
+  background: linear-gradient(135deg, #1e1208, #3d2008);
+  color: #f0e0c0;
+  border-color: rgba(200,140,40,0.3);
+}
+
+.theme-card[data-theme="zen"] {
+  background: linear-gradient(135deg, #f0ede8, #e0dcd4);
+  color: #3a3530;
+  border-color: rgba(90,138,106,0.3);
+}
+
+.theme-card[data-theme="space"] {
+  background: linear-gradient(135deg, #060614, #10103a);
+  color: #d8e0f8;
+  border-color: rgba(68,136,255,0.3);
+}
+
+.theme-card[data-theme="coffee"] {
+  background: linear-gradient(135deg, #1e140a, #4a2e12);
+  color: #ede0cc;
+  border-color: rgba(200,130,10,0.3);
+}
+
+.theme-card[data-theme="egypt"] {
+  background: linear-gradient(135deg, #0e0c05, #3d3300);
+  color: #f0e8c0;
+  border-color: rgba(212,160,23,0.4);
+}
+
+.theme-card[data-theme="pirate"] {
+  background: linear-gradient(135deg, #080e18, #1a2a3a);
+  color: #d8c8a0;
+  border-color: rgba(180,140,40,0.3);
+}
+
+.theme-card[data-theme="cabin"] {
+  background: linear-gradient(135deg, #1a1208, #5a3010);
+  color: #ede0c8;
+  border-color: rgba(212,96,32,0.3);
+}
+
+.theme-card[data-theme="neon"] {
+  background: linear-gradient(135deg, #050508, #200040);
+  color: #f0f0ff;
+  border-color: rgba(255,0,200,0.3);
+}
+
+.theme-card[data-theme="ocean"] {
+  background: linear-gradient(135deg, #020e14, #0a4a60);
+  color: #d8f0f8;
+  border-color: rgba(32,184,200,0.3);
+}
