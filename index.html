@@ -3619,6 +3619,11 @@ class Renderer {
 
       if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return; // didn't move
 
+      // Save the z-index assigned by renderAll so we can restore it after animation.
+      // Clearing to '' would leave the card at z-index:auto, which stacks below
+      // sibling cards that still hold their explicit numeric z-index.
+      const savedZIndex = el.style.zIndex;
+
       // Snap back to old position instantly, then animate to new
       el.style.transition = 'none';
       el.style.transform  = `translate(${dx}px,${dy}px)`;
@@ -3630,7 +3635,7 @@ class Renderer {
           el.style.transform  = '';
           const cleanup = () => {
             el.style.transition = '';
-            el.style.zIndex     = '';
+            el.style.zIndex     = savedZIndex;
           };
           el.addEventListener('transitionend', cleanup, { once: true });
           // Safety: clean up even if transitionend never fires
