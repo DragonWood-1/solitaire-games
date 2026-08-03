@@ -47,18 +47,19 @@ select{background:#0d0d1a;color:#e8e0ff;border:1px solid #3a3a5a;border-radius:6
 .btn-sec.active{background:#e9456044;border-color:#e94560;color:#e94560}
 @media(max-width:480px){.board-container{flex-direction:column;align-items:center}.num-pad{grid-template-columns:repeat(5,1fr);width:100%;max-width:380px}}
 </style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8788099801042098" crossorigin="anonymous"></script>
 </head>
 <body>
 <nav class="game-nav">
-  <a href="/" class="nav-logo">🃏 SolitaireRealm</a>
+  <a href="../index.html" class="nav-logo">🃏 SolitaireRealm</a>
   <div class="nav-links">
-    <a href="/">Solitaire</a>
-    <a href="/games/chess.html">Chess</a>
-    <a href="/games/sudoku.html" class="active">Sudoku</a>
-    <a href="/games/mahjong.html">Mahjong</a>
-    <a href="/games/crossword.html">Crossword</a>
-    <a href="/games/poker.html">Poker</a>
-    <a href="/games/brain.html">Brain Games</a>
+    <a href="../index.html">Solitaire</a>
+    <a href="../games/chess.html">Chess</a>
+    <a href="../games/sudoku.html" class="active">Sudoku</a>
+    <a href="../games/mahjong.html">Mahjong</a>
+    <a href="../games/crossword.html">Crossword</a>
+    <a href="../games/poker.html">Poker</a>
+    <a href="../games/brain.html">Brain Games</a>
   </div>
 </nav>
 <h1>🔢 Sudoku</h1>
@@ -367,5 +368,52 @@ document.addEventListener('keydown', e => {
 document.getElementById('errors-btn').className = 'btn btn-sec active';
 startNewGame();
 </script>
+
+<section style="max-width:760px;margin:0 auto;padding:44px 20px 52px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;line-height:1.75;color:#e9e9f2;user-select:text;-webkit-user-select:text;position:relative;z-index:1;">
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:0 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">About This Sudoku Game</h2>
+
+<p style="margin:0 0 1.1em;">Sudoku is a logic puzzle played on a nine-by-nine grid that is divided into nine three-by-three boxes. Some cells arrive filled in; the rest are yours to complete. The single rule is that every row, every column and every three-by-three box must contain each of the digits one through nine exactly once. There is no arithmetic involved and no guessing required. A properly constructed puzzle has exactly one solution, and that solution can always be reached by reasoning alone.</p>
+
+<p style="margin:0 0 1.1em;">To play here, click a cell to select it and then click a number on the pad or type a digit on your keyboard. Press Delete or Backspace, or click the same number again, to clear a cell. The given clues are fixed and cannot be overwritten. Choose Easy, Medium or Hard before starting a new game; harder settings remove more starting clues and require longer chains of deduction rather than simple scanning.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">Solving Techniques That Actually Help</h2>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Scan for the last empty cell</h3>
+<p style="margin:0 0 1.1em;">The first pass on any puzzle should be looking for rows, columns and boxes that already have eight of their nine digits. The missing digit is forced. This sounds trivial, but each cell you fill in creates new constraints elsewhere, so a single easy placement often cascades into three or four more.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Cross-hatch one digit at a time</h3>
+<p style="margin:0 0 1.1em;">Pick a digit that already appears several times on the grid, say seven. For each box that still needs a seven, mentally draw lines along every row and column that already contains one. Those lines eliminate cells. If only one cell in the box survives, the seven goes there. Working digit by digit rather than cell by cell is far faster on easy and medium puzzles.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Use notes for genuine candidates only</h3>
+<p style="margin:0 0 1.1em;">Turn on Notes mode and the numbers you enter become small pencil marks instead of answers. The discipline that separates fast solvers from slow ones is being honest with pencil marks: write down every candidate a cell can take, not just the ones you find interesting, and erase them as soon as a placement rules them out. A stale pencil mark will send you down a false path.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Look for naked and hidden pairs</h3>
+<p style="margin:0 0 1.1em;">If two cells in the same row, column or box can only hold the same two digits, those two digits must occupy those two cells in some order, so you can strike them out of every other cell in that unit. This is a <em>naked pair</em>. The mirror image is the <em>hidden pair</em>: if two digits can only go in two particular cells of a unit, then those cells hold only that pair, and any other candidates you had pencilled in there can be erased. These two patterns will carry you through most hard puzzles.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Try pointing pairs when you are stuck</h3>
+<p style="margin:0 0 1.1em;">If, within one box, a digit's only possible cells all sit in the same row, then that digit must be in that row somewhere inside the box, which means it cannot appear in that row anywhere outside the box. The same logic works for columns. It is a small elimination but it often unlocks the position when scanning has dried up.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">Features on This Grid</h2>
+
+<p style="margin:0 0 1.1em;">Puzzles are generated fresh each time rather than pulled from a fixed list, so you will not repeat a grid you have already solved. A timer runs while you work if you want to measure your progress, and it can be ignored entirely if you would rather take your time. Error highlighting can be toggled on or off: leave it on while learning so mistakes surface immediately, or switch it off for a stricter challenge where a wrong digit stays hidden until you check the board yourself.</p>
+
+<p style="margin:0 0 1.1em;">Three assistance buttons sit under the grid. Check tells you whether what you have entered so far is consistent with the solution. Hint reveals one correct digit in the cell you have selected, which is the right tool when you are stuck on a single square rather than lost overall. Solve fills the whole grid, useful when you want to see where your reasoning went wrong. Using a hint does not end the game, so you can lean on it once and carry on solving the rest yourself.</p>
+
+<p style="margin:0 0 1.1em;">For worked examples of the patterns described above, see our <a style="color:#e94560;" href="../guides/sudoku-techniques.html">sudoku techniques guide</a>.</p>
+
+</section>
+
+<footer class="site-footer-nav" style="border-top:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.3);padding:28px 20px 34px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;user-select:text;-webkit-user-select:text;position:relative;z-index:1;">
+  <nav style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 22px;margin-bottom:14px;">
+    <a href="../index.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Home</a>
+    <a href="../guides/index.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Guides</a>
+    <a href="../about.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">About</a>
+    <a href="../contact.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Contact</a>
+    <a href="../privacy.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Privacy Policy</a>
+    <a href="../terms.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Terms of Use</a>
+  </nav>
+  <p style="margin:0;color:#a6a6c0;font-size:0.84rem;">&copy; 2026 SolitaireRealm. All rights reserved.</p>
+</footer>
 </body>
 </html>

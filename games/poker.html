@@ -60,18 +60,19 @@ h1{text-align:center;padding:12px;color:#e94560;font-size:1.6rem}
 .odds-fill{height:100%;background:linear-gradient(90deg,#e94560,#e9a020);border-radius:9px;transition:width 0.6s}
 .he-hand{text-align:center;color:#e9a020;font-weight:700;font-size:0.95rem;min-height:22px;margin-bottom:6px}
 </style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8788099801042098" crossorigin="anonymous"></script>
 </head>
 <body>
 <nav class="game-nav">
-  <a href="/" class="nav-logo">🃏 SolitaireRealm</a>
+  <a href="../index.html" class="nav-logo">🃏 SolitaireRealm</a>
   <div class="nav-links">
-    <a href="/">Solitaire</a>
-    <a href="/games/chess.html">Chess</a>
-    <a href="/games/sudoku.html">Sudoku</a>
-    <a href="/games/mahjong.html">Mahjong</a>
-    <a href="/games/crossword.html">Crossword</a>
-    <a href="/games/poker.html" class="active">Poker</a>
-    <a href="/games/brain.html">Brain Games</a>
+    <a href="../index.html">Solitaire</a>
+    <a href="../games/chess.html">Chess</a>
+    <a href="../games/sudoku.html">Sudoku</a>
+    <a href="../games/mahjong.html">Mahjong</a>
+    <a href="../games/crossword.html">Crossword</a>
+    <a href="../games/poker.html" class="active">Poker</a>
+    <a href="../games/brain.html">Brain Games</a>
   </div>
 </nav>
 <h1>🃏 Poker Hand Trainer</h1>
@@ -431,5 +432,53 @@ dealIdentifier();
 dealHoldem();
 dealOdds();
 </script>
+
+<section style="max-width:760px;margin:0 auto;padding:44px 20px 52px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;line-height:1.75;color:#e9e9f2;user-select:text;-webkit-user-select:text;position:relative;z-index:1;">
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:0 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">About the Poker Hand Trainer</h2>
+
+<p style="margin:0 0 1.1em;">This is a practice tool, not a card room. Everything on this page uses play money only &mdash; in fact, it uses no money at all. There are no chips to buy, no balance to top up, no deposits, no withdrawals, and nothing of monetary value can be won here. The score and streak counters reset when you reload the page. The purpose is educational: to let you drill the mechanical skills of poker &mdash; reading a five-card hand correctly, recognising when a flop has helped you, and estimating your chances &mdash; away from any stakes at all.</p>
+
+<p style="margin:0 0 1.1em;">Those skills are worth separating out because they are the part of poker that is purely knowledge. Whether a hand is a flush or a straight is not a judgement call; it is a fact you either read quickly or you don't. Beginners lose a surprising amount of ground simply by misreading the board, and that is a fixable problem.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">The four modes</h2>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Hand Identifier</h3>
+<p style="margin:0 0 1.1em;">Five cards are dealt face up and you name the hand from ten buttons. It sounds trivial until you are doing it under a streak counter. The traps are consistent: a board with three of one suit and two of another is not a flush; a run of four consecutive ranks is not a straight; and two pair plus a third pair is still just two pair, using the highest two. Work here until the answer arrives before you have finished counting.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Hold'em Trainer</h3>
+<p style="margin:0 0 1.1em;">You get two hole cards and a three-card flop, and you choose to fold, check/call, or raise. The trainer evaluates your made hand and tells you how your choice compares. Treat this as a conversation about hand strength rather than a test with one right answer &mdash; real decisions also depend on opponents and position, which a single-player drill cannot model.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Odds Calculator</h3>
+<p style="margin:0 0 1.1em;">This runs a Monte Carlo simulation &mdash; 500 random deals of the remaining cards against one random opponent hand &mdash; and reports how often you came out ahead. Because it is a simulation rather than an exact enumeration, the number wobbles by a percentage point or two between runs. That wobble is honest: it shows you the shape of the answer rather than false precision.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Hand Rankings</h3>
+<p style="margin:0 0 1.1em;">A static reference for the ten hand categories plus a short summary of how a Hold'em deal proceeds. For a fuller treatment, including why the rankings are ordered the way they are, see our <a style="color:#e94560;" href="../guides/poker-hand-rankings.html">guide to poker hand rankings</a>.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">Things worth practising deliberately</h2>
+
+<ul style="margin:0 0 1.2em;padding-left:1.5em;">
+  <li>Read the board before you read your hand. Ask what the five community cards make on their own, then ask what your two cards add. If the board already makes a straight, your pair is worth very little.</li>
+  <li>Count outs, not hopes. With four cards to a flush after the flop, nine cards of that suit remain unseen. Two cards are still to come. That is roughly a one-in-three proposition &mdash; good, but far from a sure thing.</li>
+  <li>Watch what the flop does to hands other than yours. A flop of three cards in sequence and two of a suit is dangerous for everyone; a flop of three unconnected low cards of different suits mostly is not.</li>
+  <li>Notice the kicker. Two players holding the same pair are separated by their next-highest card, which is why an ace with a weak second card causes so much trouble.</li>
+  <li>Pay attention to your losing streaks in the Identifier. If you keep confusing flushes and straights, that is a specific gap, and ten focused minutes will close it.</li>
+</ul>
+
+<p style="margin:0 0 1.1em;">The trainer runs entirely in your browser and requires no account. Nothing about it constitutes gambling advice or an invitation to wager, and it is intended only as a way to learn how the hands work.</p>
+
+</section>
+
+<footer class="site-footer-nav" style="border-top:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.3);padding:28px 20px 34px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;user-select:text;-webkit-user-select:text;position:relative;z-index:1;">
+  <nav style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 22px;margin-bottom:14px;">
+    <a href="../index.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Home</a>
+    <a href="../guides/index.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Guides</a>
+    <a href="../about.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">About</a>
+    <a href="../contact.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Contact</a>
+    <a href="../privacy.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Privacy Policy</a>
+    <a href="../terms.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Terms of Use</a>
+  </nav>
+  <p style="margin:0;color:#a6a6c0;font-size:0.84rem;">&copy; 2026 SolitaireRealm. All rights reserved.</p>
+</footer>
 </body>
 </html>
