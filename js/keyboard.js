@@ -1,4 +1,4 @@
-/* SolitaireRealm - Keyboard Manager */
+/* Puzzle Planet - Keyboard Manager */
 'use strict';
 
 class KeyboardManager {

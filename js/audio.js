@@ -1,4 +1,4 @@
-/* SolitaireRealm - Audio Engine (Web Audio API, all synthesized) */
+/* Puzzle Planet - Audio Engine (Web Audio API, all synthesized) */
 'use strict';
 
 class AudioEngine {

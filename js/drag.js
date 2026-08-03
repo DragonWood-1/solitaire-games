@@ -1,4 +1,4 @@
-/* SolitaireRealm - Drag Manager */
+/* Puzzle Planet - Drag Manager */
 'use strict';
 
 class DragManager {

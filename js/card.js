@@ -1,4 +1,4 @@
-/* SolitaireRealm - Card Class */
+/* Puzzle Planet - Card Class */
 'use strict';
 
 class Card {

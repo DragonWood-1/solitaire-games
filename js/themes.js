@@ -1,4 +1,4 @@
-/* SolitaireRealm - Theme Manager + Ambient Canvas */
+/* Puzzle Planet - Theme Manager + Ambient Canvas */
 'use strict';
 
 class ThemeManager {

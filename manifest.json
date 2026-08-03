@@ -1,7 +1,7 @@
 {
-  "name": "SolitaireRealm",
-  "short_name": "Solitaire",
-  "description": "A beautiful, feature-rich Klondike Solitaire game with themes, achievements, and more.",
+  "name": "Puzzle Planet",
+  "short_name": "Puzzle Planet",
+  "description": "Free solitaire, chess, sudoku, mahjong, crosswords and brain games. No account, plays offline.",
   "start_url": "./",
   "display": "standalone",
   "orientation": "any",

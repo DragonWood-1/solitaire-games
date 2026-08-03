@@ -1,4 +1,4 @@
-/* SolitaireRealm - Progression System */
+/* Puzzle Planet - Progression System */
 'use strict';
 
 class ProgressionSystem {

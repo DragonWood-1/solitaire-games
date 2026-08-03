@@ -1,4 +1,4 @@
-/* SolitaireRealm - Renderer */
+/* Puzzle Planet - Renderer */
 'use strict';
 
 class Renderer {

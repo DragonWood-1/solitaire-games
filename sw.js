@@ -1,4 +1,6 @@
-const CACHE_NAME = 'solitaire-realm-v3';
+// Bumped for the Puzzle Planet rebrand: the old name must change so returning
+// visitors get the new pages instead of the cached SolitaireRealm shell.
+const CACHE_NAME = 'puzzle-planet-v4';
 
 // Pre-cache only the core shell. index.html now inlines its own CSS and JS, so
 // the old css/ and js/ files are no longer part of the critical path.

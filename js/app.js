@@ -1,4 +1,4 @@
-/* SolitaireRealm - Main Application Controller */
+/* Puzzle Planet - Main Application Controller */
 'use strict';
 
 class App {
@@ -1421,7 +1421,7 @@ class App {
     const time = `${m}:${String(s % 60).padStart(2, '0')}`;
     const moves = this.game.moves;
     const daily = this.game.isDaily ? ' | #DailyChallenge' : '';
-    const text = `🃏 SolitaireRealm | Score: ${score} | Time: ${time} | Moves: ${moves}${daily}`;
+    const text = `🃏 Puzzle Planet | Score: ${score} | Time: ${time} | Moves: ${moves}${daily}`;
 
     if (navigator.share) {
       navigator.share({ text, url: window.location.href })
@@ -1462,7 +1462,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     await app.init();
   } catch (err) {
-    console.error('[SolitaireRealm] init failed:', err);
+    console.error('[Puzzle Planet] init failed:', err);
     // Always unblock the loading screen so the user isn't stuck
     const screen = document.getElementById('loading-screen');
     const appEl  = document.getElementById('app');

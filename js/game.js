@@ -1,4 +1,4 @@
-/* SolitaireRealm - Game Engine */
+/* Puzzle Planet - Game Engine */
 'use strict';
 
 // Mulberry32 seeded PRNG

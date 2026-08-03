@@ -1,8 +1,12 @@
-/* SolitaireRealm - Storage Manager */
+/* Puzzle Planet - Storage Manager */
 'use strict';
 
 class StorageManager {
   constructor() {
+    // Deliberately still the old brand name. This prefixes every localStorage
+    // key, so renaming it would orphan existing players' saved games, stats,
+    // achievements and streaks — their progress would silently appear reset.
+    // Changing it requires a migration that copies the old keys first.
     this._prefix = 'solitaire_realm_';
     this._available = this._checkAvailable();
   }
