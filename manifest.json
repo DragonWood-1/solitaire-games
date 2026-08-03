@@ -2,7 +2,7 @@
   "name": "SolitaireRealm",
   "short_name": "Solitaire",
   "description": "A beautiful, feature-rich Klondike Solitaire game with themes, achievements, and more.",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#1a1a2e",
@@ -10,7 +10,7 @@
   "categories": ["games", "entertainment"],
   "icons": [
     {
-      "src": "/assets/icons/icon.svg",
+      "src": "./assets/icons/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

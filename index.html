@@ -83,8 +83,10 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100dvh;
-  overflow: hidden;
-  overscroll-behavior: none;
+  /* Only lock horizontal scrolling. Vertical scroll must stay available so the
+     written content below the game board is reachable by readers and crawlers. */
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   -webkit-user-select: none;
@@ -1520,6 +1522,139 @@ body.left-handed .top-row-gap {
 }
 
 /* ============================================
+   Homepage Written Content + Site Footer
+   Prefixed with .home- / .site- to guarantee no
+   collision with the game board styles above.
+   ============================================ */
+.home-content,
+.site-footer {
+  /* The game board disables selection; prose must allow it. */
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.home-content {
+  position: relative;
+  z-index: 1;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 48px 22px 56px;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--text-primary);
+}
+
+.home-content h1 {
+  font-size: clamp(1.75rem, 4.6vw, 2.3rem);
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.7em;
+}
+
+.home-content h2 {
+  font-size: clamp(1.4rem, 3.6vw, 1.75rem);
+  line-height: 1.3;
+  margin: 2em 0 0.7em;
+  padding-bottom: 0.35em;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.home-content h2:first-child { margin-top: 0; }
+
+.home-content h3 {
+  font-size: 1.12rem;
+  margin: 1.6em 0 0.45em;
+}
+
+.home-content p { margin: 0 0 1.15em; }
+
+.home-content ul {
+  margin: 0 0 1.3em;
+  padding-left: 1.5em;
+}
+
+.home-content li { margin-bottom: 0.5em; }
+
+.home-content a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.home-content strong { color: #fff; }
+
+.home-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+  margin: 1.6em 0;
+}
+
+.home-link {
+  display: block;
+  padding: 18px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  text-decoration: none !important;
+  color: var(--text-primary) !important;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.home-link:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+
+.home-link strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 1.04rem;
+  color: #fff;
+}
+
+.home-link span {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.site-footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.25);
+  padding: 30px 22px 38px;
+  text-align: center;
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 22px;
+  margin-bottom: 16px;
+}
+
+.site-footer a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.site-footer a:hover { color: var(--accent); }
+
+.site-footer p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+}
+
+@media (max-width: 560px) {
+  .home-content { padding: 32px 16px 40px; font-size: 16px; }
+}
+
+/* ============================================
    Accessibility - Reduced Motion
    ============================================ */
 @media (prefers-reduced-motion: reduce) {
@@ -2632,42 +2767,42 @@ body.left-handed .top-row-gap {
         </div>
         <p class="games-modal-sub">More brain games to keep you sharp</p>
         <div class="games-grid">
-          <a href="/games/chess.html" class="game-card-link">
+          <a href="games/chess.html" class="game-card-link">
             <div class="game-card-hub">
               <div class="game-card-icon">♟️</div>
               <div class="game-card-name">Chess</div>
               <div class="game-card-desc">Classic strategy against AI</div>
             </div>
           </a>
-          <a href="/games/sudoku.html" class="game-card-link">
+          <a href="games/sudoku.html" class="game-card-link">
             <div class="game-card-hub">
               <div class="game-card-icon">🔢</div>
               <div class="game-card-name">Sudoku</div>
               <div class="game-card-desc">Number logic puzzles</div>
             </div>
           </a>
-          <a href="/games/mahjong.html" class="game-card-link">
+          <a href="games/mahjong.html" class="game-card-link">
             <div class="game-card-hub">
               <div class="game-card-icon">🀄</div>
               <div class="game-card-name">Mahjong</div>
               <div class="game-card-desc">Tile matching solitaire</div>
             </div>
           </a>
-          <a href="/games/crossword.html" class="game-card-link">
+          <a href="games/crossword.html" class="game-card-link">
             <div class="game-card-hub">
               <div class="game-card-icon">📝</div>
               <div class="game-card-name">Crossword</div>
               <div class="game-card-desc">Word puzzle challenges</div>
             </div>
           </a>
-          <a href="/games/poker.html" class="game-card-link">
+          <a href="games/poker.html" class="game-card-link">
             <div class="game-card-hub">
               <div class="game-card-icon">🃏</div>
               <div class="game-card-name">Poker Trainer</div>
               <div class="game-card-desc">Learn Texas Hold'em</div>
             </div>
           </a>
-          <a href="/games/brain.html" class="game-card-link">
+          <a href="games/brain.html" class="game-card-link">
             <div class="game-card-hub">
               <div class="game-card-icon">🧠</div>
               <div class="game-card-name">Brain Games</div>
@@ -2693,6 +2828,138 @@ body.left-handed .top-row-gap {
     <div id="drag-ghost" class="drag-ghost" aria-hidden="true"></div>
 
   </div><!-- /app -->
+
+  <!-- ============================================
+       Written content — indexable by search engines
+       and readable by visitors below the game board.
+       ============================================ -->
+  <section class="home-content">
+    <h1>Play Klondike Solitaire Free Online</h1>
+
+    <p>SolitaireRealm is a free browser version of Klondike solitaire — the game that
+    shipped with Windows for decades and the one nearly everyone means when they say
+    "solitaire." There is no account to create, no download, and no video advertisement
+    standing between you and the first deal. Open the page and the cards are already
+    dealt.</p>
+
+    <p>The game supports both <strong>draw-one</strong> and <strong>draw-three</strong>
+    modes, <strong>standard and Vegas scoring</strong>, unlimited undo, hints when you
+    are stuck, and a daily challenge that deals every player the same seeded game. Your
+    statistics, achievements and streaks save automatically to your own browser, so you
+    can close the tab mid-game and pick up exactly where you left off.</p>
+
+    <h2>How to Play Klondike Solitaire</h2>
+
+    <p>The board has four kinds of pile. The <strong>tableau</strong> is the seven
+    columns across the bottom, dealt with one card in the first column, two in the
+    second, and so on up to seven — with only the last card in each column face-up. The
+    <strong>stock</strong> is the face-down pile of remaining cards in the top-left,
+    which you click to reveal cards into the <strong>waste</strong> pile beside it. The
+    four <strong>foundations</strong> in the top-right are where you are trying to
+    build.</p>
+
+    <p>The rules that govern every move are short:</p>
+
+    <ul>
+      <li>Build the tableau <strong>downward in alternating colours</strong> — a red
+      seven goes onto a black eight.</li>
+      <li>Build the foundations <strong>upward by suit</strong>, starting with the ace
+      and finishing with the king.</li>
+      <li>Move a face-up card along with every card stacked on top of it, as a single
+      unit.</li>
+      <li>Only a <strong>king</strong> — or a sequence headed by one — may be placed
+      into an empty tableau column.</li>
+      <li>Turning over a face-down card in the tableau is always progress.</li>
+    </ul>
+
+    <p>You win when all fifty-two cards have been moved to the foundations, ace through
+    king in each of the four suits.</p>
+
+    <h2>Is Solitaire Luck or Skill?</h2>
+
+    <p>Both, but far more skill than its reputation suggests. Somewhere in the region of
+    four out of five Klondike deals are theoretically winnable with perfect play, yet the
+    average player wins a considerably smaller share of them. That gap is not bad luck —
+    it is decision-making, and it is learnable.</p>
+
+    <p>The single most valuable habit for a new player is counterintuitive:
+    <strong>do not send every card to the foundation the moment you can.</strong> A card
+    on a foundation is effectively out of play, and low cards left in the tableau are
+    often exactly what you need to unstack a column and expose a face-down card. Aces and
+    twos should go up immediately. Beyond that, ask what the card is still doing for you
+    down below before you promote it.</p>
+
+    <p>Our <a href="guides/solitaire-strategy.html">solitaire strategy guide</a> works
+    through this and the rest of the decisions that actually move win rates — column
+    priority, stock management in draw-three, and how to read a deal before committing to
+    a first move.</p>
+
+    <h2>Guides &amp; Strategy</h2>
+
+    <div class="home-links">
+      <a class="home-link" href="guides/klondike-solitaire-rules.html">
+        <strong>Klondike Rules</strong>
+        <span>Complete rules, scoring systems, variations and a full glossary.</span>
+      </a>
+      <a class="home-link" href="guides/solitaire-strategy.html">
+        <strong>Solitaire Strategy</strong>
+        <span>The specific decisions that win more games, explained in detail.</span>
+      </a>
+      <a class="home-link" href="guides/sudoku-techniques.html">
+        <strong>Sudoku Techniques</strong>
+        <span>From naked singles all the way up to X-Wing and swordfish patterns.</span>
+      </a>
+      <a class="home-link" href="guides/chess-for-beginners.html">
+        <strong>Chess for Beginners</strong>
+        <span>Piece movement, opening principles, core tactics and first endgames.</span>
+      </a>
+      <a class="home-link" href="guides/poker-hand-rankings.html">
+        <strong>Poker Hands &amp; Odds</strong>
+        <span>All ten rankings, how kickers break ties, outs and pot odds.</span>
+      </a>
+      <a class="home-link" href="guides/mahjong-solitaire-guide.html">
+        <strong>Mahjong Solitaire</strong>
+        <span>The tile set, free-tile rules and layer-priority strategy.</span>
+      </a>
+    </div>
+
+    <h2>More Games</h2>
+
+    <p>Beyond solitaire, the site includes <a href="games/chess.html">chess</a> against
+    the computer, generated <a href="games/sudoku.html">sudoku</a> puzzles across several
+    difficulty tiers, <a href="games/mahjong.html">mahjong solitaire</a> tile matching,
+    <a href="games/crossword.html">crosswords</a>, a
+    <a href="games/poker.html">poker trainer</a> that uses play money only, and a set of
+    short <a href="games/brain.html">brain training</a> exercises. All of them are free
+    and none require an account.</p>
+
+    <h2>Plays Offline, Saves Locally</h2>
+
+    <p>SolitaireRealm installs as a Progressive Web App. Add it to your home screen or
+    desktop and it launches like a native application and keeps working with no internet
+    connection at all — useful on a flight, on the underground, or anywhere the signal
+    gives out.</p>
+
+    <p>Because the site has no backend, your progress is stored in your browser's local
+    storage on your own device rather than on our servers. Nothing is uploaded and no
+    profile of your play is built anywhere. The honest trade-off is that clearing your
+    browser data will erase your statistics, and we have no copy to restore. Our
+    <a href="about.html">About page</a> explains why the site is built this way, and the
+    <a href="privacy.html">Privacy Policy</a> covers data and cookies in full.</p>
+  </section>
+
+  <footer class="site-footer">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="guides/index.html">Guides</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Use</a>
+    </nav>
+    <p>&copy; 2026 SolitaireRealm. All rights reserved.</p>
+  </footer>
+
   <script>
 'use strict';
 /* === card.js === */
@@ -7350,7 +7617,7 @@ class App {
   // ==========================================
   _registerSW() {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register('sw.js').catch(() => {});
     }
   }
 }

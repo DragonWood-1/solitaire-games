@@ -1,31 +1,15 @@
-const CACHE_NAME = 'solitaire-realm-v2';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/css/main.css',
-  '/css/themes.css',
-  '/js/card.js',
-  '/js/game.js',
-  '/js/renderer.js',
-  '/js/drag.js',
-  '/js/audio.js',
-  '/js/themes.js',
-  '/js/progression.js',
-  '/js/storage.js',
-  '/js/keyboard.js',
-  '/js/app.js',
-  '/assets/icons/icon.svg'
-];
+const CACHE_NAME = 'solitaire-realm-v3';
 
-// Games are cached on first visit (not pre-cached to avoid install failure)
-const GAMES_TO_CACHE = [
-  '/games/chess.html',
-  '/games/sudoku.html',
-  '/games/mahjong.html',
-  '/games/crossword.html',
-  '/games/poker.html',
-  '/games/brain.html'
+// Pre-cache only the core shell. index.html now inlines its own CSS and JS, so
+// the old css/ and js/ files are no longer part of the critical path.
+// cache.addAll() is all-or-nothing — a single 404 fails the whole install — so
+// everything else is cached on first visit by the fetch handler below.
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './manifest.json',
+  './css/content.css',
+  './assets/icons/icon.svg'
 ];
 
 self.addEventListener('install', (event) => {
@@ -92,7 +76,7 @@ self.addEventListener('fetch', (event) => {
       }).catch(() => {
         // Offline fallback - return cached index.html for navigation requests
         if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
+          return caches.match('./index.html');
         }
         return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
       });
