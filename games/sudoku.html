@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sudoku - Puzzle Planet</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d1a;color:#e8e0ff;font-family:'Segoe UI',sans-serif;min-height:100vh}
+.game-nav{background:#16213e;padding:12px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;border-bottom:2px solid #e94560;position:sticky;top:0;z-index:100}
+.nav-logo{color:#e94560;font-size:1.3rem;font-weight:700;text-decoration:none}
+.nav-links{display:flex;gap:12px;flex-wrap:wrap}
+.nav-links a{color:#e8e0ff;text-decoration:none;padding:4px 10px;border-radius:6px;font-size:0.9rem;transition:background 0.2s}
+.nav-links a:hover{background:#e9456033}
+.nav-links a.active{background:#e94560;color:#fff}
+h1{text-align:center;padding:16px;color:#e94560;font-size:1.8rem}
+.game-wrapper{max-width:820px;margin:0 auto;padding:16px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.top-bar{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;padding:10px 20px}
+.top-bar label{color:#a8a0cc;font-size:0.9rem}
+select{background:#0d0d1a;color:#e8e0ff;border:1px solid #3a3a5a;border-radius:6px;padding:4px 8px;font-size:0.9rem}
+.timer-display{font-family:monospace;font-size:1.2rem;font-weight:700;color:#e94560;min-width:60px}
+.status-msg{color:#e94560;font-weight:700;font-size:1rem;min-height:24px;text-align:center}
+.board-container{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+#sudoku-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:1px;background:#3a3a5a;border:3px solid #e94560;border-radius:4px;width:min(450px,95vw);height:min(450px,95vw)}
+.cell{background:#16213e;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:min(22px,4.5vw);font-weight:600;position:relative;transition:background 0.15s;border:none;outline:none}
+.cell.given{color:#e8e0ff}
+.cell.user{color:#a8a0ff}
+.cell.selected{background:#e9456033!important}
+.cell.highlighted{background:#3a3a6a!important}
+.cell.same-num{background:#e9a02033!important}
+.cell.conflict{color:#e94560!important}
+.cell.notes-cell{font-size:min(7px,1.5vw);display:grid;grid-template-columns:repeat(3,1fr);align-items:center;justify-items:center;padding:1px}
+.note-num{color:#7a70aa;font-size:min(7px,1.5vw);line-height:1.2}
+/* 3x3 box borders */
+.cell[data-c="2"],.cell[data-c="5"]{border-right:2px solid #e94560}
+.cell[data-r="2"],.cell[data-r="5"]{border-bottom:2px solid #e94560}
+.num-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:min(145px,30vw)}
+.num-btn{background:#2a2a4a;color:#e8e0ff;border:2px solid #3a3a5a;border-radius:8px;font-size:min(20px,4vw);font-weight:700;cursor:pointer;aspect-ratio:1;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.num-btn:hover{background:#e9456033;border-color:#e94560}
+.num-btn.active{background:#e9456055;border-color:#e94560}
+.num-btn.erase{font-size:min(14px,3vw);background:#1a1a2e}
+.controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:100%}
+.btn{background:#e94560;color:#fff;border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-size:0.85rem;transition:background 0.2s;white-space:nowrap}
+.btn:hover{background:#c73450}
+.btn-sec{background:#2a2a4a;color:#e8e0ff;border:1px solid #3a3a5a}
+.btn-sec:hover{background:#3a3a5a}
+.btn-sec.active{background:#e9456044;border-color:#e94560;color:#e94560}
+@media(max-width:480px){.board-container{flex-direction:column;align-items:center}.num-pad{grid-template-columns:repeat(5,1fr);width:100%;max-width:380px}}
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8788099801042098" crossorigin="anonymous"></script>
+</head>
+<body>
+<nav class="game-nav">
+  <a href="../index.html" class="nav-logo">🃏 Puzzle Planet</a>
+  <div class="nav-links">
+    <a href="../index.html">Solitaire</a>
+    <a href="../games/chess.html">Chess</a>
+    <a href="../games/sudoku.html" class="active">Sudoku</a>
+    <a href="../games/mahjong.html">Mahjong</a>
+    <a href="../games/crossword.html">Crossword</a>
+    <a href="../games/poker.html">Poker</a>
+    <a href="../games/brain.html">Brain Games</a>
+  </div>
+</nav>
+<h1>🔢 Sudoku</h1>
+<div class="game-wrapper">
+  <div class="top-bar">
+    <label>Difficulty:
+      <select id="difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </label>
+    <span>⏱ <span class="timer-display" id="timer">0:00</span></span>
+    <button class="btn" onclick="startNewGame()">New Game</button>
+  </div>
+  <div class="status-msg" id="status-msg"></div>
+  <div class="board-container">
+    <div id="sudoku-grid"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+      <div class="num-pad" id="num-pad"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+        <button class="btn btn-sec" id="notes-btn" onclick="toggleNotes()">📝 Notes</button>
+        <button class="btn btn-sec" id="errors-btn" onclick="toggleErrors()">⚠ Errors</button>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-sec" onclick="checkSolution()">✓ Check</button>
+    <button class="btn btn-sec" onclick="revealCell()">💡 Hint</button>
+    <button class="btn btn-sec" onclick="revealAll()">👁 Solve</button>
+  </div>
+</div>
+<script>
+// ===== SUDOKU ENGINE =====
+let puzzle = [], solution = [], userGrid = [], notes = [];
+let selectedCell = null;
+let notesMode = false, showErrors = true;
+let timerSecs = 0, timerInterval;
+let gameActive = false;
+let hintsUsed = 0;
+
+// Sudoku solver using backtracking
+function solveSudoku(grid) {
+  const g = grid.map(r => [...r]);
+  function isValid(g, r, c, num) {
+    for (let i = 0; i < 9; i++) {
+      if (g[r][i] === num) return false;
+      if (g[i][c] === num) return false;
+    }
+    const br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++)
+      if (g[br + i][bc + j] === num) return false;
+    return true;
+  }
+  function solve(g) {
+    for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) {
+      if (g[r][c] !== 0) continue;
+      const nums = shuffle([1,2,3,4,5,6,7,8,9]);
+      for (const n of nums) {
+        if (isValid(g, r, c, n)) {
+          g[r][c] = n;
+          if (solve(g)) return true;
+          g[r][c] = 0;
+        }
+      }
+      return false;
+    }
+    return true;
+  }
+  solve(g);
+  return g;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+function countSolutions(grid, limit) {
+  let count = 0;
+  function isValid(g, r, c, num) {
+    for (let i = 0; i < 9; i++) {
+      if (g[r][i] === num) return false;
+      if (g[i][c] === num) return false;
+    }
+    const br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++)
+      if (g[br + i][bc + j] === num) return false;
+    return true;
+  }
+  function solve(g) {
+    if (count >= limit) return;
+    for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) {
+      if (g[r][c] !== 0) continue;
+      for (let n = 1; n <= 9; n++) {
+        if (isValid(g, r, c, n)) {
+          g[r][c] = n;
+          solve(g.map(x => [...x]));
+          g[r][c] = 0;
+        }
+      }
+      return;
+    }
+    count++;
+  }
+  solve(grid.map(r => [...r]));
+  return count;
+}
+
+function generatePuzzle(difficulty) {
+  // Generate a full solution
+  const full = Array.from({length: 9}, () => Array(9).fill(0));
+  const sol = solveSudoku(full);
+
+  const clueCount = { easy: 38, medium: 30, hard: 24 }[difficulty];
+  const cells = shuffle([...Array(81).keys()]);
+  const puzz = sol.map(r => [...r]);
+
+  let removed = 0;
+  for (const idx of cells) {
+    if (removed >= 81 - clueCount) break;
+    const r = Math.floor(idx / 9), c = idx % 9;
+    const backup = puzz[r][c];
+    puzz[r][c] = 0;
+    // For performance, skip unique check for easy/medium on extra removals
+    if (difficulty === 'hard' && countSolutions(puzz, 2) !== 1) {
+      puzz[r][c] = backup;
+    } else {
+      removed++;
+    }
+  }
+  return { puzzle: puzz, solution: sol };
+}
+
+function startNewGame() {
+  clearInterval(timerInterval);
+  const diff = document.getElementById('difficulty').value;
+  const data = generatePuzzle(diff);
+  puzzle = data.puzzle.map(r => [...r]);
+  solution = data.solution.map(r => [...r]);
+  userGrid = puzzle.map(r => [...r]);
+  notes = Array.from({length: 9}, () => Array.from({length: 9}, () => new Set()));
+  selectedCell = null; notesMode = false; hintsUsed = 0;
+  document.getElementById('status-msg').textContent = '';
+  document.getElementById('notes-btn').className = 'btn btn-sec';
+  timerSecs = 0; gameActive = true;
+  timerInterval = setInterval(() => { if (gameActive) { timerSecs++; updateTimer(); } }, 1000);
+  renderGrid(); buildNumPad();
+}
+
+function updateTimer() {
+  document.getElementById('timer').textContent = Math.floor(timerSecs / 60) + ':' + (timerSecs % 60 < 10 ? '0' : '') + timerSecs % 60;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('sudoku-grid'); grid.innerHTML = '';
+  for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.dataset.r = r; cell.dataset.c = c;
+    const given = puzzle[r][c] !== 0;
+    const val = userGrid[r][c];
+    const noteSet = notes[r][c];
+
+    if (given) { cell.className += ' given'; cell.textContent = val; }
+    else if (val !== 0) {
+      cell.className += ' user';
+      if (showErrors && val !== solution[r][c]) cell.className += ' conflict';
+      cell.textContent = val;
+    } else if (noteSet.size > 0) {
+      cell.className += ' notes-cell';
+      for (let n = 1; n <= 9; n++) {
+        const ns = document.createElement('span');
+        ns.className = 'note-num';
+        ns.textContent = noteSet.has(n) ? n : '';
+        cell.appendChild(ns);
+      }
+    }
+
+    // Highlight
+    if (selectedCell) {
+      const [sr, sc] = selectedCell;
+      const sameBox = Math.floor(r/3) === Math.floor(sr/3) && Math.floor(c/3) === Math.floor(sc/3);
+      if (r === sr && c === sc) cell.className += ' selected';
+      else if (r === sr || c === sc || sameBox) cell.className += ' highlighted';
+      // Same number highlight
+      const selVal = userGrid[sr][sc];
+      if (selVal !== 0 && val === selVal && !(r === sr && c === sc)) cell.className += ' same-num';
+    }
+
+    cell.addEventListener('click', () => selectCell(r, c));
+    grid.appendChild(cell);
+  }
+}
+
+function selectCell(r, c) {
+  selectedCell = [r, c];
+  renderGrid();
+  // Highlight active number button
+  const val = userGrid[r][c];
+  document.querySelectorAll('.num-btn').forEach(b => {
+    b.className = 'num-btn' + (b.dataset.num && parseInt(b.dataset.num) === val ? ' active' : (b.dataset.num ? '' : ' erase'));
+  });
+}
+
+function inputNumber(num) {
+  if (!selectedCell || !gameActive) return;
+  const [r, c] = selectedCell;
+  if (puzzle[r][c] !== 0) return; // given cell
+  if (notesMode && num !== 0) {
+    if (notes[r][c].has(num)) notes[r][c].delete(num);
+    else notes[r][c].add(num);
+    userGrid[r][c] = 0;
+  } else {
+    userGrid[r][c] = num;
+    notes[r][c].clear();
+  }
+  renderGrid();
+  checkWin();
+}
+
+function checkWin() {
+  for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++)
+    if (userGrid[r][c] !== solution[r][c]) return;
+  gameActive = false; clearInterval(timerInterval);
+  document.getElementById('status-msg').textContent = '🎉 Puzzle solved! Time: ' + Math.floor(timerSecs/60) + ':' + (timerSecs%60<10?'0':'')+timerSecs%60;
+}
+
+function checkSolution() {
+  let errors = 0;
+  for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++)
+    if (userGrid[r][c] !== 0 && userGrid[r][c] !== solution[r][c]) errors++;
+  document.getElementById('status-msg').textContent = errors === 0 ? '✓ Looking good so far!' : `✗ ${errors} error(s) found`;
+}
+
+function revealCell() {
+  if (!gameActive) return;
+  if (selectedCell) {
+    const [r, c] = selectedCell;
+    if (puzzle[r][c] === 0) {
+      userGrid[r][c] = solution[r][c]; notes[r][c].clear(); hintsUsed++;
+      renderGrid(); checkWin();
+      document.getElementById('status-msg').textContent = `Hint used (${hintsUsed} total)`;
+      return;
+    }
+  }
+  // Find a random unfilled cell
+  const empty = [];
+  for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++)
+    if (puzzle[r][c] === 0 && userGrid[r][c] === 0) empty.push([r, c]);
+  if (empty.length === 0) return;
+  const [r, c] = empty[Math.floor(Math.random() * empty.length)];
+  userGrid[r][c] = solution[r][c]; notes[r][c].clear(); hintsUsed++;
+  selectedCell = [r, c]; renderGrid(); checkWin();
+  document.getElementById('status-msg').textContent = `Hint used (${hintsUsed} total)`;
+}
+
+function revealAll() {
+  for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) userGrid[r][c] = solution[r][c];
+  gameActive = false; clearInterval(timerInterval);
+  document.getElementById('status-msg').textContent = 'Puzzle solved (cheater! 😄)';
+  renderGrid();
+}
+
+function toggleNotes() {
+  notesMode = !notesMode;
+  const btn = document.getElementById('notes-btn');
+  btn.className = 'btn btn-sec' + (notesMode ? ' active' : '');
+  btn.textContent = (notesMode ? '📝 Notes ON' : '📝 Notes');
+}
+
+function toggleErrors() {
+  showErrors = !showErrors;
+  const btn = document.getElementById('errors-btn');
+  btn.className = 'btn btn-sec' + (showErrors ? ' active' : '');
+  renderGrid();
+}
+
+function buildNumPad() {
+  const pad = document.getElementById('num-pad'); pad.innerHTML = '';
+  for (let n = 1; n <= 9; n++) {
+    const btn = document.createElement('button');
+    btn.className = 'num-btn'; btn.textContent = n; btn.dataset.num = n;
+    btn.addEventListener('click', () => inputNumber(n));
+    pad.appendChild(btn);
+  }
+  const erase = document.createElement('button');
+  erase.className = 'num-btn erase'; erase.textContent = '⌫'; erase.dataset.num = 0;
+  erase.addEventListener('click', () => inputNumber(0));
+  pad.appendChild(erase);
+}
+
+document.addEventListener('keydown', e => {
+  if (!gameActive) return;
+  const key = e.key;
+  if (key >= '1' && key <= '9') inputNumber(parseInt(key));
+  else if (key === 'Backspace' || key === 'Delete' || key === '0') inputNumber(0);
+  else if (key === 'ArrowUp' && selectedCell) { selectedCell = [Math.max(0, selectedCell[0]-1), selectedCell[1]]; renderGrid(); }
+  else if (key === 'ArrowDown' && selectedCell) { selectedCell = [Math.min(8, selectedCell[0]+1), selectedCell[1]]; renderGrid(); }
+  else if (key === 'ArrowLeft' && selectedCell) { selectedCell = [selectedCell[0], Math.max(0, selectedCell[1]-1)]; renderGrid(); }
+  else if (key === 'ArrowRight' && selectedCell) { selectedCell = [selectedCell[0], Math.min(8, selectedCell[1]+1)]; renderGrid(); }
+});
+
+// Init
+document.getElementById('errors-btn').className = 'btn btn-sec active';
+startNewGame();
+</script>
+
+<section style="max-width:760px;margin:0 auto;padding:44px 20px 52px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;line-height:1.75;color:#e9e9f2;user-select:text;-webkit-user-select:text;position:relative;z-index:1;">
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:0 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">About This Sudoku Game</h2>
+
+<p style="margin:0 0 1.1em;">Sudoku is a logic puzzle played on a nine-by-nine grid that is divided into nine three-by-three boxes. Some cells arrive filled in; the rest are yours to complete. The single rule is that every row, every column and every three-by-three box must contain each of the digits one through nine exactly once. There is no arithmetic involved and no guessing required. A properly constructed puzzle has exactly one solution, and that solution can always be reached by reasoning alone.</p>
+
+<p style="margin:0 0 1.1em;">To play here, click a cell to select it and then click a number on the pad or type a digit on your keyboard. Press Delete or Backspace to clear a cell. The given clues are fixed and cannot be overwritten. Choose Easy, Medium or Hard before starting a new game; harder settings remove more starting clues and require longer chains of deduction rather than simple scanning.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">Solving Techniques That Actually Help</h2>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Scan for the last empty cell</h3>
+<p style="margin:0 0 1.1em;">The first pass on any puzzle should be looking for rows, columns and boxes that already have eight of their nine digits. The missing digit is forced. This sounds trivial, but each cell you fill in creates new constraints elsewhere, so a single easy placement often cascades into three or four more.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Cross-hatch one digit at a time</h3>
+<p style="margin:0 0 1.1em;">Pick a digit that already appears several times on the grid, say seven. For each box that still needs a seven, mentally draw lines along every row and column that already contains one. Those lines eliminate cells. If only one cell in the box survives, the seven goes there. Working digit by digit rather than cell by cell is far faster on easy and medium puzzles.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Use notes for genuine candidates only</h3>
+<p style="margin:0 0 1.1em;">Turn on Notes mode and the numbers you enter become small pencil marks instead of answers. The discipline that separates fast solvers from slow ones is being honest with pencil marks: write down every candidate a cell can take, not just the ones you find interesting, and erase them as soon as a placement rules them out. A stale pencil mark will send you down a false path.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Look for naked and hidden pairs</h3>
+<p style="margin:0 0 1.1em;">If two cells in the same row, column or box can only hold the same two digits, those two digits must occupy those two cells in some order, so you can strike them out of every other cell in that unit. This is a <em>naked pair</em>. The mirror image is the <em>hidden pair</em>: if two digits can only go in two particular cells of a unit, then those cells hold only that pair, and any other candidates you had pencilled in there can be erased. These two patterns will carry you through most hard puzzles.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Try pointing pairs when you are stuck</h3>
+<p style="margin:0 0 1.1em;">If, within one box, a digit's only possible cells all sit in the same row, then that digit must be in that row somewhere inside the box, which means it cannot appear in that row anywhere outside the box. The same logic works for columns. It is a small elimination but it often unlocks the position when scanning has dried up.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">Features on This Grid</h2>
+
+<p style="margin:0 0 1.1em;">Puzzles are generated fresh each time rather than pulled from a fixed list, so you will not repeat a grid you have already solved. A timer runs while you work if you want to measure your progress, and it can be ignored entirely if you would rather take your time. Error highlighting can be toggled on or off: leave it on while learning so mistakes surface immediately, or switch it off for a stricter challenge where a wrong digit stays hidden until you check the board yourself.</p>
+
+<p style="margin:0 0 1.1em;">Three assistance buttons sit under the grid. Check tells you whether what you have entered so far is consistent with the solution. Hint reveals one correct digit in the cell you have selected, which is the right tool when you are stuck on a single square rather than lost overall. Solve fills the whole grid, useful when you want to see where your reasoning went wrong. Using a hint does not end the game, so you can lean on it once and carry on solving the rest yourself.</p>
+
+<p style="margin:0 0 1.1em;">For worked examples of the patterns described above, see our <a style="color:#e94560;" href="../guides/sudoku-techniques.html">sudoku techniques guide</a>.</p>
+
+</section>
+
+<footer class="site-footer-nav" style="border-top:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.3);padding:28px 20px 34px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;user-select:text;-webkit-user-select:text;position:relative;z-index:1;">
+  <nav style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 22px;margin-bottom:14px;">
+    <a href="../index.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Home</a>
+    <a href="../guides/index.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Guides</a>
+    <a href="../about.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">About</a>
+    <a href="../contact.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Contact</a>
+    <a href="../privacy.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Privacy Policy</a>
+    <a href="../terms.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Terms of Use</a>
+  </nav>
+  <p style="margin:0;color:#a6a6c0;font-size:0.84rem;">&copy; 2026 Puzzle Planet. All rights reserved.</p>
+</footer>
+</body>
+</html>

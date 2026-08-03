@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mahjong Solitaire - Puzzle Planet</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d1a;color:#e8e0ff;font-family:'Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden}
+.game-nav{background:#16213e;padding:12px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;border-bottom:2px solid #e94560;position:sticky;top:0;z-index:100}
+.nav-logo{color:#e94560;font-size:1.3rem;font-weight:700;text-decoration:none}
+.nav-links{display:flex;gap:12px;flex-wrap:wrap}
+.nav-links a{color:#e8e0ff;text-decoration:none;padding:4px 10px;border-radius:6px;font-size:0.9rem;transition:background 0.2s}
+.nav-links a:hover{background:#e9456033}
+.nav-links a.active{background:#e94560;color:#fff}
+h1{text-align:center;padding:12px;color:#e94560;font-size:1.6rem}
+.top-bar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px 16px;background:#16213e;border-bottom:1px solid #2a2a4a}
+.stat{color:#a8a0cc;font-size:0.95rem}
+.stat span{color:#e8e0ff;font-weight:700}
+.btn{background:#e94560;color:#fff;border:none;border-radius:6px;padding:7px 14px;cursor:pointer;font-size:0.85rem;transition:background 0.2s}
+.btn:hover{background:#c73450}
+.btn-sec{background:#2a2a4a;color:#e8e0ff;border:1px solid #3a3a5a}
+.btn-sec:hover{background:#3a3a5a}
+.status-msg{text-align:center;color:#e94560;font-weight:700;font-size:1rem;min-height:26px;padding:4px}
+#board-container{position:relative;margin:0 auto;overflow:auto;padding:20px}
+#board{position:relative}
+.tile{position:absolute;cursor:pointer;user-select:none;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;line-height:1;transition:transform 0.1s,box-shadow 0.1s;border:2px solid #4a4a6a;background:linear-gradient(145deg,#2a2a4a,#1a1a3a)}
+.tile::before{content:'';position:absolute;inset:0;border-radius:4px;background:linear-gradient(145deg,rgba(255,255,255,0.08),transparent)}
+.tile.free{cursor:pointer;border-color:#5a5a8a;box-shadow:3px 3px 6px #00000088,0 0 0 1px #3a3a5a}
+.tile.free:hover{border-color:#e94560;box-shadow:3px 3px 6px #00000088,0 0 8px #e9456044}
+.tile.selected{border-color:#e94560!important;box-shadow:3px 3px 6px #000,0 0 12px #e94560!important;background:linear-gradient(145deg,#3a1a2a,#2a0a1a)!important}
+.tile.hint{border-color:#e9a020!important;box-shadow:3px 3px 6px #000,0 0 10px #e9a02088!important}
+.tile.matched{opacity:0;pointer-events:none;transition:opacity 0.4s}
+.tile.blocked{filter:brightness(0.55);cursor:not-allowed}
+.tile-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.tile-suit{font-size:0.55rem;color:#a8a0cc;line-height:1}
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8788099801042098" crossorigin="anonymous"></script>
+</head>
+<body>
+<nav class="game-nav">
+  <a href="../index.html" class="nav-logo">🃏 Puzzle Planet</a>
+  <div class="nav-links">
+    <a href="../index.html">Solitaire</a>
+    <a href="../games/chess.html">Chess</a>
+    <a href="../games/sudoku.html">Sudoku</a>
+    <a href="../games/mahjong.html" class="active">Mahjong</a>
+    <a href="../games/crossword.html">Crossword</a>
+    <a href="../games/poker.html">Poker</a>
+    <a href="../games/brain.html">Brain Games</a>
+  </div>
+</nav>
+<h1>🀄 Mahjong Solitaire</h1>
+<div class="top-bar">
+  <div class="stat">Tiles: <span id="tile-count">144</span></div>
+  <div class="stat">⏱ <span id="timer">0:00</span></div>
+  <div class="stat">Shuffles: <span id="shuffles">3</span></div>
+  <button class="btn" onclick="newGame()">New Game</button>
+  <button class="btn btn-sec" onclick="getHint()">💡 Hint</button>
+  <button class="btn btn-sec" onclick="shuffleTiles()">🔀 Shuffle</button>
+</div>
+<div class="status-msg" id="status-msg"></div>
+<div id="board-container"><div id="board"></div></div>
+<script>
+// ===== MAHJONG ENGINE =====
+
+// Tile definitions: [type, value, display]
+// Types: bamboo(b), characters(c), circles(o), wind(w), dragon(d), flower(f), season(s)
+function buildTileSet() {
+  const tiles = [];
+  let id = 0;
+  // 3 suits × 9 values × 4 copies = 108
+  const suits = [
+    {type:'b', glyphs:['🎋','🎍','🌿','🍀','🌱','🌾','🎄','🌵','🌴']},
+    {type:'c', glyphs:['一','二','三','四','五','六','七','八','九']},
+    {type:'o', glyphs:['①','②','③','④','⑤','⑥','⑦','⑧','⑨']}
+  ];
+  for (const suit of suits) for (let v = 0; v < 9; v++) for (let k = 0; k < 4; k++)
+    tiles.push({id: id++, type: suit.type, value: v, glyph: suit.glyphs[v], matchKey: suit.type+v});
+  // 4 winds × 4 = 16
+  const winds = ['東','南','西','北'];
+  for (let i = 0; i < 4; i++) for (let k = 0; k < 4; k++)
+    tiles.push({id: id++, type:'w', value: i, glyph: winds[i], matchKey:'w'+i});
+  // 3 dragons × 4 = 12
+  const dragons = ['中','發','白'];
+  for (let i = 0; i < 3; i++) for (let k = 0; k < 4; k++)
+    tiles.push({id: id++, type:'d', value: i, glyph: dragons[i], matchKey:'d'+i});
+  // 4 flowers (match each other) × 1
+  const flowers = ['🌸','🌺','🌻','🌼'];
+  for (let i = 0; i < 4; i++)
+    tiles.push({id: id++, type:'f', value: i, glyph: flowers[i], matchKey:'flower'});
+  // 4 seasons (match each other) × 1
+  const seasons = ['🌱','☀️','🍂','❄️'];
+  for (let i = 0; i < 4; i++)
+    tiles.push({id: id++, type:'s', value: i, glyph: seasons[i], matchKey:'season'});
+  return tiles; // 144 tiles
+}
+
+// Classic turtle layout: [col, row, layer]
+// Layer 0 = bottom, higher = on top
+function buildLayout() {
+  const positions = [];
+  // Layer 0: main field 14 cols × 8 rows (some cells empty)
+  const layer0 = [
+    [2,0],[4,0],[6,0],[8,0],[10,0],[12,0],
+    [0,1],[2,1],[4,1],[6,1],[8,1],[10,1],[12,1],[14,1],
+    [0,2],[2,2],[4,2],[6,2],[8,2],[10,2],[12,2],[14,2],
+    [0,3],[2,3],[4,3],[6,3],[8,3],[10,3],[12,3],[14,3],
+    [0,4],[2,4],[4,4],[6,4],[8,4],[10,4],[12,4],[14,4],
+    [0,5],[2,5],[4,5],[6,5],[8,5],[10,5],[12,5],[14,5],
+    [0,6],[2,6],[4,6],[6,6],[8,6],[10,6],[12,6],[14,6],
+    [2,7],[4,7],[6,7],[8,7],[10,7],[12,7],
+  ]; // 56
+  layer0.forEach(([c,r]) => positions.push({c,r,layer:0}));
+
+  // Layer 1: 10 cols × 6 rows (inner area)
+  const layer1 = [];
+  for (let r = 1; r < 7; r++) for (let c = 2; c < 13; c += 2)
+    if (!((r===1||r===6)&&(c===2||c===12))) layer1.push([c,r]);
+  // 36 tiles on layer 1
+  layer1.forEach(([c,r]) => positions.push({c,r,layer:1}));
+
+  // Layer 2: 8 cols × 4 rows
+  const layer2 = [];
+  for (let r = 2; r < 6; r++) for (let c = 4; c < 12; c += 2) layer2.push([c,r]);
+  // 16
+  layer2.forEach(([c,r]) => positions.push({c,r,layer:2}));
+
+  // Layer 3: 6 cols × 2 rows
+  const layer3 = [];
+  for (let r = 3; r < 5; r++) for (let c = 5; c < 11; c += 2) layer3.push([c,r]);
+  // 8 - too many, only 4 needed
+  // layer3.forEach(([c,r]) => positions.push({c,r,layer:3}));
+
+  // Layer 3: 4 cols × 2 rows centered
+  for (let r = 3; r < 5; r++) for (let c = 6; c < 10; c += 2)
+    positions.push({c,r,layer:3});
+  // 4
+
+  // Layer 4: center 2
+  positions.push({c:7,r:3,layer:4});
+  positions.push({c:7,r:4,layer:4});
+
+  // Extra: far-left and far-right single tiles
+  positions.push({c:-2,r:3,layer:0});
+  positions.push({c:16,r:3,layer:0});
+
+  // One on top
+  positions.push({c:7,r:3,layer:5});
+
+  // Trim to 144
+  return positions.slice(0, 144);
+}
+
+const TILE_W = 52, TILE_H = 64, LAYER_OFFSET = 5;
+
+let tileData = []; // {pos, tile, removed, selected}
+let selectedTile = null;
+let timerSecs = 0, timerInterval, gameActive = false;
+let shufflesLeft = 3;
+let hintPair = null;
+
+function newGame() {
+  clearInterval(timerInterval);
+  const tileSet = buildTileSet();
+  shuffle(tileSet);
+  const layout = buildLayout();
+  tileData = layout.map((pos, i) => ({ pos, tile: tileSet[i % tileSet.length], removed: false, selected: false }));
+  // Verify we have exactly the right tiles (pair them)
+  // Re-assign tiles so matching pairs exist on the board
+  assignPairedTiles();
+  selectedTile = null; shufflesLeft = 3; timerSecs = 0; gameActive = true;
+  hintPair = null;
+  document.getElementById('status-msg').textContent = '';
+  document.getElementById('shuffles').textContent = shufflesLeft;
+  timerInterval = setInterval(() => { timerSecs++; document.getElementById('timer').textContent = Math.floor(timerSecs/60)+':'+(timerSecs%60<10?'0':'')+timerSecs%60; }, 1000);
+  renderBoard();
+}
+
+function assignPairedTiles() {
+  const allTiles = buildTileSet();
+  shuffle(allTiles);
+  for (let i = 0; i < tileData.length && i < allTiles.length; i++)
+    tileData[i].tile = allTiles[i];
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function isFree(idx) {
+  const t = tileData[idx];
+  if (t.removed) return false;
+  const {c, r, layer} = t.pos;
+  // Check nothing on top
+  for (let i = 0; i < tileData.length; i++) {
+    if (i === idx || tileData[i].removed) continue;
+    const o = tileData[i].pos;
+    if (o.layer === layer + 1 && Math.abs(o.c - c) < 2 && Math.abs(o.r - r) < 2) return false;
+    if (o.layer === layer + 1 && o.c === c && Math.abs(o.r - r) <= 1) return false;
+  }
+  // Check left side clear
+  const leftClear = !tileData.some((t2, i2) => i2 !== idx && !tileData[i2].removed &&
+    tileData[i2].pos.layer === layer && tileData[i2].pos.r === r && tileData[i2].pos.c === c - 2);
+  // Check right side clear
+  const rightClear = !tileData.some((t2, i2) => i2 !== idx && !tileData[i2].removed &&
+    tileData[i2].pos.layer === layer && tileData[i2].pos.r === r && tileData[i2].pos.c === c + 2);
+  return leftClear || rightClear;
+}
+
+function isBlocked(idx) { return !isFree(idx); }
+
+function tilesMatch(a, b) {
+  const ta = tileData[a].tile, tb = tileData[b].tile;
+  if (ta.matchKey === 'flower' && tb.matchKey === 'flower') return true;
+  if (ta.matchKey === 'season' && tb.matchKey === 'season') return true;
+  return ta.matchKey === tb.matchKey;
+}
+
+function handleTileClick(idx) {
+  if (!gameActive || tileData[idx].removed) return;
+  if (!isFree(idx)) return;
+  hintPair = null;
+
+  if (selectedTile === null) {
+    selectedTile = idx;
+    tileData[idx].selected = true;
+  } else if (selectedTile === idx) {
+    tileData[idx].selected = false;
+    selectedTile = null;
+  } else {
+    if (tilesMatch(selectedTile, idx)) {
+      tileData[selectedTile].removed = true;
+      tileData[idx].removed = true;
+      tileData[selectedTile].selected = false;
+      selectedTile = null;
+      const remaining = tileData.filter(t => !t.removed).length;
+      document.getElementById('tile-count').textContent = remaining;
+      if (remaining === 0) {
+        gameActive = false; clearInterval(timerInterval);
+        document.getElementById('status-msg').textContent = '🎉 Congratulations! You won!';
+      } else {
+        checkNoMoves();
+      }
+    } else {
+      tileData[selectedTile].selected = false;
+      tileData[idx].selected = true;
+      selectedTile = idx;
+    }
+  }
+  renderBoard();
+}
+
+function checkNoMoves() {
+  const pairs = findFreePairs();
+  if (pairs.length === 0) {
+    document.getElementById('status-msg').textContent = 'No more moves! Try shuffling.';
+  }
+}
+
+function findFreePairs() {
+  const free = tileData.map((t, i) => isFree(i) ? i : -1).filter(i => i >= 0);
+  const pairs = [];
+  for (let i = 0; i < free.length; i++) for (let j = i + 1; j < free.length; j++)
+    if (tilesMatch(free[i], free[j])) pairs.push([free[i], free[j]]);
+  return pairs;
+}
+
+function getHint() {
+  if (!gameActive) return;
+  const pairs = findFreePairs();
+  if (pairs.length === 0) { document.getElementById('status-msg').textContent = 'No matching pairs available!'; return; }
+  hintPair = pairs[Math.floor(Math.random() * pairs.length)];
+  renderBoard();
+  setTimeout(() => { hintPair = null; renderBoard(); }, 2000);
+}
+
+function shuffleTiles() {
+  if (shufflesLeft <= 0 || !gameActive) return;
+  shufflesLeft--;
+  document.getElementById('shuffles').textContent = shufflesLeft;
+  const remaining = tileData.filter(t => !t.removed);
+  const tiles = remaining.map(t => t.tile);
+  shuffle(tiles);
+  remaining.forEach((t, i) => t.tile = tiles[i]);
+  hintPair = null; selectedTile = null;
+  document.getElementById('status-msg').textContent = '';
+  renderBoard();
+}
+
+function renderBoard() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+
+  // Compute board dimensions
+  let maxC = 0, maxR = 0;
+  tileData.forEach(t => { if (!t.removed) { maxC = Math.max(maxC, t.pos.c); maxR = Math.max(maxR, t.pos.r); } });
+  const boardW = (maxC + 2) * (TILE_W / 2) + TILE_W + 50;
+  const boardH = (maxR + 2) * (TILE_H / 2) + TILE_H + 50;
+  board.style.width = boardW + 'px'; board.style.height = boardH + 'px';
+
+  // Sort by layer then position for proper z-ordering
+  const order = tileData.map((t, i) => i).filter(i => !tileData[i].removed);
+  order.sort((a, b) => {
+    const pa = tileData[a].pos, pb = tileData[b].pos;
+    if (pa.layer !== pb.layer) return pa.layer - pb.layer;
+    return pa.r !== pb.r ? pa.r - pb.r : pa.c - pb.c;
+  });
+
+  order.forEach(idx => {
+    const {pos, tile, selected} = tileData[idx];
+    const free = isFree(idx);
+    const el = document.createElement('div');
+    el.className = 'tile' + (free ? ' free' : ' blocked') + (selected ? ' selected' : '');
+    if (hintPair && hintPair.includes(idx)) el.className += ' hint';
+
+    const x = pos.c * (TILE_W / 2) + pos.layer * LAYER_OFFSET + 10;
+    const y = pos.r * (TILE_H / 2) - pos.layer * LAYER_OFFSET + 10;
+
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.width = TILE_W + 'px';
+    el.style.height = TILE_H + 'px';
+    el.style.zIndex = pos.layer * 100 + pos.r * 10 + pos.c;
+
+    const inner = document.createElement('div');
+    inner.className = 'tile-inner';
+    const g = document.createElement('div');
+    g.style.fontSize = '1.4rem';
+    g.textContent = tile.glyph;
+    inner.appendChild(g);
+    el.appendChild(inner);
+
+    el.addEventListener('click', () => handleTileClick(idx));
+    board.appendChild(el);
+  });
+
+  document.getElementById('tile-count').textContent = order.length;
+}
+
+newGame();
+</script>
+
+<section style="max-width:760px;margin:0 auto;padding:44px 20px 52px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;line-height:1.75;color:#e9e9f2;user-select:text;-webkit-user-select:text;position:relative;z-index:1;">
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:0 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">About Mahjong Solitaire</h2>
+
+<p style="margin:0 0 1.1em;">This is mahjong solitaire, the single-player tile-matching puzzle, not the four-player gambling game of the same name. The two share a tile set and nothing else. There are no hands, no draws from a wall, no scoring for combinations and no opponents. Instead, one hundred and forty-four tiles are stacked into a layered arrangement and your job is to clear the whole pile by removing identical tiles two at a time.</p>
+
+<p style="margin:0 0 1.1em;">The layout used here is the classic turtle, sometimes called the dragon: a broad rectangular base with tiles piled several layers deep through the middle and single tiles trailing off each end. Because tiles overlap, most of the pile is locked at the start and only a fraction of it can be touched.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">The Rules</h2>
+
+<ul style="margin:0 0 1.2em;padding-left:1.5em;">
+  <li>A tile is <strong>free</strong> if nothing is stacked on top of it and either its left or its right long edge is unblocked. A tile with neighbours on both sides is trapped even if its top is clear.</li>
+  <li>Click one free tile, then click a second matching free tile. Both disappear, potentially freeing tiles beneath and beside them.</li>
+  <li>Tiles match when they are identical: the same number in the same suit, the same wind, the same dragon.</li>
+  <li>The flowers are the one exception, and the seasons are the other. Any flower matches any other flower, and any season matches any other season, because each of those tiles is unique.</li>
+  <li>Clear all one hundred and forty-four tiles and you win. Run out of available pairs and the deal is dead.</li>
+</ul>
+
+<p style="margin:0 0 1.1em;">The tile set is the standard one: three suits of nine values with four copies each, giving one hundred and eight; four winds and three dragons, four copies each, giving twenty-eight; and eight bonus tiles made up of four flowers and four seasons.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">Strategy That Makes a Difference</h2>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Peel the top layers first</h3>
+<p style="margin:0 0 1.1em;">Tiles sitting on the upper layers block the most other tiles. Removing them opens up the largest number of new options, whereas clearing a pair from the long side arms usually opens nothing at all. When you have a choice between two identical matches, take the higher one.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Think in fours, not twos</h3>
+<p style="margin:0 0 1.1em;">Every ordinary tile exists in four copies, so most matches are really a choice among several. If three copies of a tile are currently free and the fourth is buried, matching two of the free ones leaves one free copy waiting for the buried one, which is fine. But if two copies are free and two are stacked directly on top of each other in a single column, clearing the free pair strands the other two permanently, because the lower one can never be exposed while its twin sits on it. Scan for those vertical twins before you commit.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Free the long rows early</h3>
+<p style="margin:0 0 1.1em;">The bottom layer of the turtle contains long horizontal rows where only the two end tiles are ever free. These rows unlock slowly, one tile from each end at a time, so start chipping at them as soon as you can rather than leaving a twelve-tile row for the endgame.</p>
+
+<h3 style="font-size:1.1rem;margin:1.5em 0 0.4em;">Spend the flowers and seasons deliberately</h3>
+<p style="margin:0 0 1.1em;">Because any flower matches any other flower, those tiles are flexible and can rescue you later. If a flower is blocking something important, use it; otherwise leave the group intact for as long as it is convenient, since a flexible pair is worth more than a rigid one when the board tightens up.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">Features on This Board</h2>
+
+<p style="margin:0 0 1.1em;">The bar above the layout tracks how many tiles remain, how long you have been playing, and how many shuffles you have left. A hint highlights one currently available pair for a couple of seconds, which is useful when you suspect a match exists but cannot spot it among a hundred tiles. You also get three shuffles per game: a shuffle redistributes the remaining tiles across the same positions, which is your escape hatch when the board deadlocks with tiles still on it. Use them sparingly, because a shuffle can just as easily produce another dead position.</p>
+
+<p style="margin:0 0 1.1em;">Each new game deals a fresh arrangement, so the difficulty varies from deal to deal in the way it does with physical tiles. For a fuller walkthrough of layouts and tile types, read our <a style="color:#e94560;" href="../guides/mahjong-solitaire-guide.html">mahjong solitaire guide</a>.</p>
+
+</section>
+
+<footer class="site-footer-nav" style="border-top:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.3);padding:28px 20px 34px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;user-select:text;-webkit-user-select:text;position:relative;z-index:1;">
+  <nav style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 22px;margin-bottom:14px;">
+    <a href="../index.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Home</a>
+    <a href="../guides/index.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Guides</a>
+    <a href="../about.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">About</a>
+    <a href="../contact.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Contact</a>
+    <a href="../privacy.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Privacy Policy</a>
+    <a href="../terms.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Terms of Use</a>
+  </nav>
+  <p style="margin:0;color:#a6a6c0;font-size:0.84rem;">&copy; 2026 Puzzle Planet. All rights reserved.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crossword - Puzzle Planet</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d1a;color:#e8e0ff;font-family:'Segoe UI',sans-serif;min-height:100vh}
+.game-nav{background:#16213e;padding:12px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;border-bottom:2px solid #e94560;position:sticky;top:0;z-index:100}
+.nav-logo{color:#e94560;font-size:1.3rem;font-weight:700;text-decoration:none}
+.nav-links{display:flex;gap:12px;flex-wrap:wrap}
+.nav-links a{color:#e8e0ff;text-decoration:none;padding:4px 10px;border-radius:6px;font-size:0.9rem;transition:background 0.2s}
+.nav-links a:hover{background:#e9456033}
+.nav-links a.active{background:#e94560;color:#fff}
+h1{text-align:center;padding:12px;color:#e94560;font-size:1.6rem}
+.top-bar{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px 16px;background:#16213e;border-bottom:1px solid #2a2a4a}
+.timer-display{font-family:monospace;font-size:1.1rem;font-weight:700;color:#e94560}
+.btn{background:#e94560;color:#fff;border:none;border-radius:6px;padding:7px 14px;cursor:pointer;font-size:0.85rem;transition:background 0.2s}
+.btn:hover{background:#c73450}
+.btn-sec{background:#2a2a4a;color:#e8e0ff;border:1px solid #3a3a5a}
+.btn-sec:hover{background:#3a3a5a}
+.status-msg{text-align:center;color:#e94560;font-weight:700;font-size:0.95rem;min-height:24px;padding:4px 16px}
+.puzzle-title{text-align:center;color:#a8a0cc;font-size:0.9rem;padding:4px}
+.game-area{display:flex;gap:20px;justify-content:center;align-items:flex-start;flex-wrap:wrap;padding:16px;max-width:1100px;margin:0 auto}
+#grid-container{display:flex;flex-direction:column;align-items:center;gap:8px}
+#crossword-grid{display:grid;border:2px solid #3a3a5a;border-radius:4px;overflow:hidden}
+.cell{width:36px;height:36px;background:#1a1a2e;border:1px solid #2a2a4a;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.95rem;font-weight:700;text-transform:uppercase}
+.cell.black{background:#0d0d1a;cursor:default;border-color:#0d0d1a}
+.cell.selected{background:#e9456033;border-color:#e94560}
+.cell.active-word{background:#3a3a6a}
+.cell.correct{color:#4a9a4a}
+.cell.incorrect{color:#e94560}
+.cell input{position:absolute;inset:0;background:transparent;border:none;text-align:center;font-size:0.95rem;font-weight:700;color:#e8e0ff;text-transform:uppercase;cursor:pointer;outline:none;caret-color:transparent;width:100%;padding:0}
+.cell-num{position:absolute;top:1px;left:2px;font-size:0.45rem;color:#a8a0cc;line-height:1;pointer-events:none}
+.clues-panel{width:280px;display:flex;flex-direction:column;gap:12px;max-height:80vh;overflow-y:auto}
+.clues-panel::-webkit-scrollbar{width:4px}
+.clues-panel::-webkit-scrollbar-thumb{background:#e94560;border-radius:2px}
+.clue-section{background:#16213e;border:1px solid #2a2a4a;border-radius:8px;padding:12px}
+.clue-section h3{color:#e94560;font-size:0.9rem;margin-bottom:8px;border-bottom:1px solid #2a2a4a;padding-bottom:6px}
+.clue-item{padding:4px 6px;cursor:pointer;border-radius:4px;font-size:0.82rem;color:#c8c0ee;line-height:1.4;transition:background 0.15s}
+.clue-item:hover{background:#2a2a4a}
+.clue-item.active{background:#e9456033;color:#e8e0ff}
+.clue-num{color:#e94560;font-weight:700;margin-right:4px}
+@media(max-width:640px){.cell{width:30px;height:30px;font-size:0.8rem}.clues-panel{width:100%;max-width:400px;max-height:300px}}
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8788099801042098" crossorigin="anonymous"></script>
+</head>
+<body>
+<nav class="game-nav">
+  <a href="../index.html" class="nav-logo">🃏 Puzzle Planet</a>
+  <div class="nav-links">
+    <a href="../index.html">Solitaire</a>
+    <a href="../games/chess.html">Chess</a>
+    <a href="../games/sudoku.html">Sudoku</a>
+    <a href="../games/mahjong.html">Mahjong</a>
+    <a href="../games/crossword.html" class="active">Crossword</a>
+    <a href="../games/poker.html">Poker</a>
+    <a href="../games/brain.html">Brain Games</a>
+  </div>
+</nav>
+<h1>📝 Crossword</h1>
+<div class="top-bar">
+  <span>⏱ <span class="timer-display" id="timer">0:00</span></span>
+  <button class="btn btn-sec" onclick="prevPuzzle()">◀ Prev</button>
+  <button class="btn btn-sec" onclick="nextPuzzle()">Next ▶</button>
+  <button class="btn" onclick="newPuzzle()">New Puzzle</button>
+  <button class="btn btn-sec" onclick="checkWord()">✓ Check Word</button>
+  <button class="btn btn-sec" onclick="revealWord()">💡 Reveal</button>
+</div>
+<div class="status-msg" id="status-msg"></div>
+<div class="puzzle-title" id="puzzle-title"></div>
+<div class="game-area">
+  <div id="grid-container">
+    <div id="crossword-grid"></div>
+  </div>
+  <div class="clues-panel">
+    <div class="clue-section">
+      <h3>Across</h3>
+      <div id="across-clues"></div>
+    </div>
+    <div class="clue-section">
+      <h3>Down</h3>
+      <div id="down-clues"></div>
+    </div>
+  </div>
+</div>
+<script>
+// ===== CROSSWORD PUZZLES =====
+// Grid: '#' = black, letter = answer, ' ' = empty cell
+// Size can vary
+
+const PUZZLES = [
+{
+  title: "Card Games Theme",
+  size: 10,
+  // 10x10 grid - '#' = black square, letter = answer
+  // Each row must be exactly 10 characters
+  grid: [
+    "POKER#ACES",
+    "L#R#S#A#P#",
+    "ACE#SPADE#",
+    "Y##T#D##S#",
+    "#FLUSH##E#",
+    "HAND#SUIT#",
+    "###A##R###",
+    "TRUMP####S",
+    "#D#I#H#A#T",
+    "DEAL#HIGH#"
+  ],
+  across: [
+    {num:1, clue:"Popular card game with betting rounds", row:0, col:0, len:5},
+    {num:6, clue:"High-value cards, one or eleven in blackjack", row:0, col:6, len:4},
+    {num:7, clue:"Card with value between 2 and king", row:2, col:0, len:3},
+    {num:8, clue:"Black suit with shovel-shaped symbol", row:2, col:4, len:5},
+    {num:9, clue:"Poker hand: five cards of same suit", row:4, col:1, len:5},
+    {num:10, clue:"Cards held by a player", row:5, col:0, len:4},
+    {num:11, clue:"Category of cards: hearts, clubs, etc.", row:5, col:5, len:4},
+    {num:12, clue:"Card that beats others; to outdo", row:7, col:0, len:5},
+    {num:13, clue:"Distribute cards to players", row:9, col:0, len:4},
+    {num:14, clue:"Highest card in some games", row:9, col:5, len:4},
+  ],
+  down: [
+    {num:1, clue:"To stake money on a card outcome", row:0, col:0, len:4},
+    {num:2, clue:"Not yet dealt; remaining in deck", row:0, col:2, len:3},
+    {num:3, clue:"Playing card suits symbol set", row:0, col:4, len:5},
+    {num:4, clue:"Throw away unwanted cards", row:0, col:6, len:4},
+    {num:5, clue:"Sequence of cards in order", row:0, col:8, len:4},
+    {num:9, clue:"Winning card in trick-taking games", row:4, col:1, len:3},
+    {num:10, clue:"Playing card has four of these (suits)", row:5, col:0, len:4},
+    {num:11, clue:"Cards of same rank group", row:5, col:5, len:4},
+  ]
+},
+{
+  title: "Casino & Games",
+  size: 10,
+  grid: [
+    "BLACKJACK#",
+    "E#I##A#A##",
+    "T#N#RAISE#",
+    "##G##I##B#",
+    "CHIPS####L",
+    "#D##RIVER#",
+    "ROYAL####U",
+    "#I##S#FOLD",
+    "BLUFF####F",
+    "#E##S#####"
+  ],
+  across: [
+    {num:1, clue:"Card game where 21 is the goal", row:0, col:0, len:9},
+    {num:2, clue:"Increase the bet in poker", row:2, col:4, len:5},
+    {num:3, clue:"Casino currency used at tables", row:4, col:0, len:5},
+    {num:4, clue:"Highest possible straight flush", row:6, col:0, len:5},
+    {num:5, clue:"Withdraw from a poker hand", row:7, col:6, len:4},
+    {num:6, clue:"Deceive opponents about your hand", row:8, col:0, len:5},
+  ],
+  down: [
+    {num:1, clue:"To wager; place a bet", row:0, col:0, len:9},
+    {num:2, clue:"Compulsory bet before cards are dealt", row:0, col:2, len:5},
+    {num:3, clue:"Cards dealt face-up for all players", row:2, col:5, len:6},
+    {num:4, clue:"Number of cards in a standard hand", row:0, col:8, len:8},
+  ]
+},
+{
+  title: "Classic Solitaire",
+  size: 10,
+  grid: [
+    "KLONDIKE##",
+    "I##S##A##R",
+    "N#STOCK##E",
+    "G##T##D##D",
+    "#WASTE###S",
+    "TABLEAU###",
+    "###P###A##",
+    "FOUNDATION",
+    "###I####D#",
+    "###L######"
+  ],
+  across: [
+    {num:1, clue:"Most popular solitaire variant", row:0, col:0, len:8},
+    {num:2, clue:"Face-down draw pile in solitaire", row:2, col:2, len:5},
+    {num:3, clue:"Cards turned from stock", row:4, col:1, len:5},
+    {num:4, clue:"The seven columns in Klondike", row:5, col:0, len:7},
+    {num:5, clue:"Where completed suits go (A to K)", row:7, col:0, len:10},
+  ],
+  down: [
+    {num:1, clue:"Build these sequences in solitaire columns", row:0, col:0, len:4},
+    {num:2, clue:"Move a card from one place here", row:0, col:3, len:8},
+    {num:3, clue:"Completing the game", row:0, col:9, len:4},
+    {num:4, clue:"Alternating color rule for tableau", row:4, col:1, len:5},
+    {num:5, clue:"Suit symbol: ♠", row:2, col:7, len:4},
+  ]
+}
+];
+
+let currentPuzzleIdx = 0;
+let userGrid = []; // 2D array of entered letters
+let selectedCell = null; // [row, col]
+let direction = 'across'; // 'across' or 'down'
+let timerSecs = 0, timerInterval, gameActive = false;
+let numberedCells = {}; // "r,c" -> number
+let wordMap = {}; // "num-dir" -> {cells, answer}
+
+function getPuzzle() { return PUZZLES[currentPuzzleIdx]; }
+
+function parsePuzzle(puz) {
+  const G = puz.grid;
+  const N = puz.size;
+  const cells = []; // 2D
+  for (let r = 0; r < G.length; r++) {
+    cells[r] = [];
+    const row = G[r];
+    for (let c = 0; c < N; c++) {
+      const ch = row[c] || '#';
+      cells[r][c] = ch === '#' ? null : ch;
+    }
+  }
+  return cells;
+}
+
+function numberCells(cells, puz) {
+  const N = puz.size;
+  const nums = {};
+  let n = 1;
+  for (let r = 0; r < cells.length; r++) for (let c = 0; c < N; c++) {
+    if (!cells[r][c]) continue;
+    const acrossStart = (c === 0 || !cells[r][c-1]) && c + 1 < N && cells[r][c+1];
+    const downStart = (r === 0 || !cells[r-1]?.[c]) && r + 1 < cells.length && cells[r+1]?.[c];
+    if (acrossStart || downStart) { nums[r+','+c] = n++; }
+  }
+  return nums;
+}
+
+function buildWordMap(puz, cells) {
+  const wm = {};
+  for (const clue of [...puz.across, ...puz.down]) {
+    const dir = puz.across.includes(clue) ? 'across' : 'down';
+    const cellList = [];
+    let answer = '';
+    for (let i = 0; i < clue.len; i++) {
+      const r = clue.row + (dir === 'down' ? i : 0);
+      const c = clue.col + (dir === 'across' ? i : 0);
+      cellList.push([r, c]);
+      answer += cells[r]?.[c] || '';
+    }
+    wm[clue.num + '-' + dir] = { cells: cellList, answer, clue };
+  }
+  return wm;
+}
+
+function newPuzzle() { loadPuzzle(currentPuzzleIdx); }
+function nextPuzzle() { currentPuzzleIdx = (currentPuzzleIdx + 1) % PUZZLES.length; loadPuzzle(currentPuzzleIdx); }
+function prevPuzzle() { currentPuzzleIdx = (currentPuzzleIdx - 1 + PUZZLES.length) % PUZZLES.length; loadPuzzle(currentPuzzleIdx); }
+
+function loadPuzzle(idx) {
+  clearInterval(timerInterval);
+  currentPuzzleIdx = idx;
+  const puz = getPuzzle();
+  const cells = parsePuzzle(puz);
+  numberedCells = numberCells(cells, puz);
+  wordMap = buildWordMap(puz, cells);
+  userGrid = cells.map(row => row.map(c => c ? '' : null));
+  selectedCell = null; direction = 'across';
+  timerSecs = 0; gameActive = true;
+  document.getElementById('status-msg').textContent = '';
+  document.getElementById('puzzle-title').textContent = puz.title;
+  timerInterval = setInterval(() => { timerSecs++; document.getElementById('timer').textContent = Math.floor(timerSecs/60)+':'+(timerSecs%60<10?'0':'')+timerSecs%60; }, 1000);
+  renderGrid(cells); renderClues(puz);
+}
+
+function getActiveWord() {
+  if (!selectedCell) return null;
+  const [sr, sc] = selectedCell;
+  for (const key in wordMap) {
+    if (key.endsWith('-' + direction)) {
+      const w = wordMap[key];
+      if (w.cells.some(([r, c]) => r === sr && c === sc)) return key;
+    }
+  }
+  // Try other direction
+  const otherDir = direction === 'across' ? 'down' : 'across';
+  for (const key in wordMap) {
+    if (key.endsWith('-' + otherDir)) {
+      const w = wordMap[key];
+      if (w.cells.some(([r, c]) => r === sr && c === sc)) return key;
+    }
+  }
+  return null;
+}
+
+function renderGrid(cells) {
+  const puz = getPuzzle();
+  const N = puz.size;
+  const grid = document.getElementById('crossword-grid');
+  grid.style.gridTemplateColumns = `repeat(${N}, 36px)`;
+  grid.innerHTML = '';
+
+  const activeWordKey = getActiveWord();
+  const activeCells = activeWordKey ? wordMap[activeWordKey].cells : [];
+
+  for (let r = 0; r < (cells || parsePuzzle(puz)).length; r++) {
+    const row = (cells || parsePuzzle(puz))[r];
+    for (let c = 0; c < N; c++) {
+      const cell = document.createElement('div');
+      const isBlack = row[c] === null;
+      if (isBlack) { cell.className = 'cell black'; grid.appendChild(cell); continue; }
+
+      const isSel = selectedCell && selectedCell[0] === r && selectedCell[1] === c;
+      const inWord = activeCells.some(([ar, ac]) => ar === r && ac === c);
+      cell.className = 'cell' + (isSel ? ' selected' : '') + (inWord && !isSel ? ' active-word' : '');
+
+      const numKey = r + ',' + c;
+      if (numberedCells[numKey]) {
+        const num = document.createElement('span');
+        num.className = 'cell-num';
+        num.textContent = numberedCells[numKey];
+        cell.appendChild(num);
+      }
+
+      const val = userGrid[r]?.[c] || '';
+      const inp = document.createElement('input');
+      inp.type = 'text'; inp.maxLength = 1; inp.value = val;
+      inp.setAttribute('autocomplete', 'off');
+      inp.setAttribute('readonly', true);
+      cell.appendChild(inp);
+
+      cell.addEventListener('click', () => handleCellClick(r, c));
+      grid.appendChild(cell);
+    }
+  }
+  updateClueHighlight(activeWordKey);
+}
+
+function handleCellClick(r, c) {
+  if (!gameActive) return;
+  if (selectedCell && selectedCell[0] === r && selectedCell[1] === c) {
+    direction = direction === 'across' ? 'down' : 'across';
+  } else {
+    selectedCell = [r, c];
+  }
+  const puz = getPuzzle();
+  renderGrid(parsePuzzle(puz));
+}
+
+function handleKeyDown(e) {
+  if (!selectedCell || !gameActive) return;
+  const key = e.key.toUpperCase();
+  const [r, c] = selectedCell;
+  const puz = getPuzzle();
+  const cells = parsePuzzle(puz);
+
+  if (key.length === 1 && key >= 'A' && key <= 'Z') {
+    e.preventDefault();
+    if (userGrid[r][c] !== null) userGrid[r][c] = key;
+    advanceCursor(cells);
+    renderGrid(cells);
+    checkAutoComplete();
+  } else if (e.key === 'Backspace') {
+    e.preventDefault();
+    if (userGrid[r][c] === '') retreatCursor(cells);
+    else userGrid[r][c] = '';
+    renderGrid(cells);
+  } else if (e.key === 'ArrowRight') { e.preventDefault(); moveSelected(0, 1, cells); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); moveSelected(0, -1, cells); }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); moveSelected(1, 0, cells); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); moveSelected(-1, 0, cells); }
+  else if (e.key === 'Tab') { e.preventDefault(); nextWord(); }
+}
+
+function moveSelected(dr, dc, cells) {
+  if (!selectedCell) return;
+  const [r, c] = selectedCell;
+  const nr = r + dr, nc = c + dc;
+  if (nr >= 0 && nr < cells.length && nc >= 0 && nc < getPuzzle().size && cells[nr][nc] !== null) {
+    selectedCell = [nr, nc];
+    renderGrid(cells);
+  }
+}
+
+function advanceCursor(cells) {
+  const [r, c] = selectedCell;
+  const dr = direction === 'down' ? 1 : 0, dc = direction === 'across' ? 1 : 0;
+  const nr = r + dr, nc = c + dc;
+  if (nr >= 0 && nr < cells.length && nc >= 0 && nc < getPuzzle().size && cells[nr]?.[nc] !== null)
+    selectedCell = [nr, nc];
+}
+
+function retreatCursor(cells) {
+  const [r, c] = selectedCell;
+  const dr = direction === 'down' ? -1 : 0, dc = direction === 'across' ? -1 : 0;
+  const nr = r + dr, nc = c + dc;
+  if (nr >= 0 && nr < cells.length && nc >= 0 && nc < getPuzzle().size && cells[nr]?.[nc] !== null)
+    selectedCell = [nr, nc];
+}
+
+function nextWord() {
+  const keys = Object.keys(wordMap);
+  const current = getActiveWord();
+  if (!current) { if (keys.length > 0) { const w = wordMap[keys[0]]; selectedCell = w.cells[0]; direction = keys[0].split('-')[1]; } return; }
+  const idx = keys.indexOf(current);
+  const nextIdx = (idx + 1) % keys.length;
+  const nextKey = keys[nextIdx];
+  const w = wordMap[nextKey];
+  selectedCell = w.cells[0];
+  direction = nextKey.split('-')[1];
+  renderGrid(parsePuzzle(getPuzzle()));
+}
+
+function checkWord() {
+  const key = getActiveWord();
+  if (!key) return;
+  const w = wordMap[key];
+  let correct = 0, wrong = 0;
+  w.cells.forEach(([r, c], i) => {
+    const entered = userGrid[r][c];
+    if (!entered) return;
+    if (entered === w.answer[i]) correct++;
+    else wrong++;
+  });
+  document.getElementById('status-msg').textContent = wrong === 0 && correct > 0 ? '✓ Word looks correct!' : wrong > 0 ? `✗ ${wrong} letter(s) incorrect` : 'Fill in some letters first';
+}
+
+function revealWord() {
+  const key = getActiveWord();
+  if (!key) return;
+  const w = wordMap[key];
+  w.cells.forEach(([r, c], i) => { if (userGrid[r][c] !== null) userGrid[r][c] = w.answer[i]; });
+  renderGrid(parsePuzzle(getPuzzle()));
+  document.getElementById('status-msg').textContent = 'Word revealed!';
+}
+
+function checkAutoComplete() {
+  for (const key in wordMap) {
+    const w = wordMap[key];
+    for (let i = 0; i < w.cells.length; i++) {
+      const [r, c] = w.cells[i];
+      if (!userGrid[r][c] || userGrid[r][c] !== w.answer[i]) return;
+    }
+  }
+  // All words complete
+  let allCorrect = true;
+  for (const key in wordMap) {
+    const w = wordMap[key];
+    for (let i = 0; i < w.cells.length; i++) {
+      const [r, c] = w.cells[i];
+      if (userGrid[r][c] !== w.answer[i]) { allCorrect = false; break; }
+    }
+    if (!allCorrect) break;
+  }
+  if (allCorrect) {
+    gameActive = false; clearInterval(timerInterval);
+    document.getElementById('status-msg').textContent = '🎉 Puzzle complete!';
+  }
+}
+
+function renderClues(puz) {
+  const acDiv = document.getElementById('across-clues');
+  const dnDiv = document.getElementById('down-clues');
+  acDiv.innerHTML = ''; dnDiv.innerHTML = '';
+  for (const clue of puz.across) {
+    const item = document.createElement('div');
+    item.className = 'clue-item'; item.dataset.key = clue.num + '-across';
+    item.innerHTML = `<span class="clue-num">${clue.num}.</span>${clue.clue}`;
+    item.addEventListener('click', () => { selectWordByKey(clue.num + '-across'); });
+    acDiv.appendChild(item);
+  }
+  for (const clue of puz.down) {
+    const item = document.createElement('div');
+    item.className = 'clue-item'; item.dataset.key = clue.num + '-down';
+    item.innerHTML = `<span class="clue-num">${clue.num}.</span>${clue.clue}`;
+    item.addEventListener('click', () => { selectWordByKey(clue.num + '-down'); });
+    dnDiv.appendChild(item);
+  }
+}
+
+function selectWordByKey(key) {
+  if (!wordMap[key]) return;
+  const w = wordMap[key];
+  selectedCell = w.cells[0];
+  direction = key.split('-')[1];
+  renderGrid(parsePuzzle(getPuzzle()));
+}
+
+function updateClueHighlight(activeKey) {
+  document.querySelectorAll('.clue-item').forEach(el => {
+    el.className = 'clue-item' + (el.dataset.key === activeKey ? ' active' : '');
+  });
+  if (activeKey) {
+    const active = document.querySelector(`.clue-item[data-key="${activeKey}"]`);
+    if (active) active.scrollIntoView({ block: 'nearest' });
+  }
+}
+
+document.addEventListener('keydown', handleKeyDown);
+
+loadPuzzle(0);
+</script>
+
+<section style="max-width:760px;margin:0 auto;padding:44px 20px 52px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;line-height:1.75;color:#e9e9f2;user-select:text;-webkit-user-select:text;position:relative;z-index:1;">
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:0 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">About this crossword</h2>
+
+<p style="margin:0 0 1.1em;">A crossword is a grid of white and black squares in which every white square belongs to at least one word, read either left to right (Across) or top to bottom (Down). Each numbered square starts a word, and each numbered word has a clue. Because most white squares sit at the intersection of an Across answer and a Down answer, every letter you place is checked twice. That crossing structure is the whole point of the puzzle: it is what lets you solve a clue you could not have solved cold.</p>
+
+<p style="margin:0 0 1.1em;">The puzzles here are 10&times;10 grids built around three themes &mdash; Card Games, Casino &amp; Games, and Classic Solitaire &mdash; so the answers stay in familiar territory while you learn the solving habits. Click a square to select it, type letters, and use the arrow keys to move around the grid. The Prev and Next buttons move between puzzles, Check Word tells you whether the answer you are sitting on is correct, and Reveal fills it in when you would rather move on than stall. A timer runs at the top if you want to track your pace, and you can ignore it entirely if you would rather not.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">How to actually solve one</h2>
+
+<p style="margin:0 0 1.1em;">Beginners usually start at 1 Across and work down the list in order. That is the slowest possible route. Better solvers scan for the clues they are sure of, fill those in wherever they appear, and let the crossing letters do the rest of the work.</p>
+
+<ul style="margin:0 0 1.2em;padding-left:1.5em;">
+  <li><strong>Take the free ones first.</strong> Read every Across clue and every Down clue once, entering only the answers you know instantly. Never leave a certain answer unentered because you are working through the list in order.</li>
+  <li><strong>Let the grid interrogate you.</strong> Once a few answers are in, a half-filled slot like <em>S _ A _ E</em> narrows the possibilities enormously. Look at partly filled entries before you look at the clue list again.</li>
+  <li><strong>Use the length.</strong> The clue "Poker hand: five cards of same suit" fits FLUSH in five squares and nothing else. Counting squares eliminates plausible-but-wrong answers before you commit ink to them.</li>
+  <li><strong>Match the clue's form to the answer's form.</strong> A clue phrased as an infinitive ("To stake money on a card outcome") wants a verb; a clue phrased as a plural noun wants a plural answer. This grammatical agreement is a rule constructors follow, and it is a reliable filter.</li>
+  <li><strong>Mine the theme.</strong> When a puzzle is titled "Classic Solitaire", the vocabulary of that world &mdash; suits, ranks, piles, deals &mdash; is disproportionately likely. A theme is a hint about the whole grid, not decoration.</li>
+  <li><strong>When stuck, doubt an answer rather than the clue.</strong> Most dead ends come from one confidently wrong entry poisoning three crossings. If a region refuses to resolve, erase your least certain answer there and try again.</li>
+</ul>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">Using Check and Reveal well</h2>
+
+<p style="margin:0 0 1.1em;">Check Word is more useful than it looks. Use it on the answer you feel roughly seventy percent sure about &mdash; the one holding up a corner. Confirming or killing that entry unblocks everything crossing it. Using Check on every word as you go turns the puzzle into typing practice; using it never means you can spend twenty minutes building on a wrong letter.</p>
+
+<p style="margin:0 0 1.1em;">Reveal is for when you have genuinely exhausted a clue. There is no scoring penalty here, and seeing an answer you could not get is how you acquire the vocabulary that makes the next puzzle easier. The words that recur in themed crosswords are a fairly small set, and you learn them mostly by meeting them.</p>
+
+<p style="margin:0 0 1.1em;">The puzzle runs entirely in your browser with no account and no downloads. If you enjoy this, our <a style="color:#e94560;" href="../guides/index.html">strategy guides</a> cover the card games that supply most of the vocabulary in these grids.</p>
+
+</section>
+
+<footer class="site-footer-nav" style="border-top:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.3);padding:28px 20px 34px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;user-select:text;-webkit-user-select:text;position:relative;z-index:1;">
+  <nav style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 22px;margin-bottom:14px;">
+    <a href="../index.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Home</a>
+    <a href="../guides/index.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Guides</a>
+    <a href="../about.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">About</a>
+    <a href="../contact.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Contact</a>
+    <a href="../privacy.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Privacy Policy</a>
+    <a href="../terms.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Terms of Use</a>
+  </nav>
+  <p style="margin:0;color:#a6a6c0;font-size:0.84rem;">&copy; 2026 Puzzle Planet. All rights reserved.</p>
+</footer>
+</body>
+</html>

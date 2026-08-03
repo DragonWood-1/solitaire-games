@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mahjong Solitaire: Tiles, Rules and Real Strategy | Puzzle Planet</title>
+<meta name="description" content="Learn Mahjong solitaire properly: the turtle layout, the full tile set, what makes a tile free, flower and season matching, layer strategy and the quad trap.">
+<link rel="canonical" href="https://puzzleplanetonline.com/guides/mahjong-solitaire-guide.html">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8788099801042098" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="../css/content.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="../index.html">🧩 Puzzle Planet</a>
+  <nav class="site-nav">
+    <a href="../index.html">Play Solitaire</a>
+    <a href="../guides/index.html">Guides</a>
+    <a href="../about.html">About</a>
+  </nav>
+</header>
+<main class="content">
+<article>
+
+<h1>Mahjong Solitaire: Tiles, Rules and Real Strategy</h1>
+
+<p>Mahjong solitaire is the single-player tile-matching game where 144 tiles are stacked into a layered pyramid — most often the "turtle" or "dragon" arrangement — and you clear them by removing identical pairs from the exposed edges. It is quiet, it is quick, and it looks far simpler than it is. Most losses are not bad luck. They are decisions made forty moves earlier that quietly removed the last route to a tile buried under three layers.</p>
+
+<p>This guide covers what the tiles actually are, the precise rule for when a tile can be taken, the two special matching cases that surprise newcomers, and the strategy that separates a 30% win rate from something much better.</p>
+
+<h2>First: this is not the four-player game</h2>
+
+<p>The confusion is worth clearing up immediately, because the two games share nothing but their equipment.</p>
+
+<p><strong>Mahjong</strong> proper is a four-player game of Chinese origin, played somewhat like rummy. Players draw and discard tiles, competing to be first to assemble a complete hand — typically four sets of three (runs or triplets) plus a pair. There is scoring, there are named winning patterns, there is reading what opponents discard, and there are substantially different rule sets in Japan, Hong Kong, Taiwan and elsewhere. It is a deep competitive game with a serious tournament scene.</p>
+
+<p><strong>Mahjong solitaire</strong>, sometimes called Shanghai or Taipei, is a Western puzzle invented in the early 1980s that borrowed the tiles and nothing else. One player, no hands to build, no opponents, no scoring patterns. You simply remove matching pairs until the board is empty or you run out of legal moves. Someone who is excellent at four-player Mahjong has no particular advantage here, and vice versa. If you came looking for the four-player game, this is not it — but the tile vocabulary below is shared, so it is a reasonable place to start learning the faces.</p>
+
+<h2>The tile set</h2>
+
+<p>A standard set contains 144 tiles: 136 tiles in four copies each of 34 designs, plus 8 unique bonus tiles. They fall into three groups.</p>
+
+<h3>The three suits (108 tiles)</h3>
+
+<ul>
+<li><strong>Bamboo (sticks).</strong> Numbered 1 through 9. Most show that many bamboo stalks; the 1 of bamboo is traditionally drawn as a bird, which regularly confuses people looking for a single stick.</li>
+<li><strong>Characters (craks, myriads).</strong> Numbered 1 through 9, each showing a Chinese numeral above the character 萬. These are the hardest to distinguish at a glance for players who do not read the numerals, and the most common source of missed matches.</li>
+<li><strong>Circles (dots, coins).</strong> Numbered 1 through 9, showing that many discs.</li>
+</ul>
+
+<p>That is 9 designs per suit × 3 suits × 4 copies = 108 tiles.</p>
+
+<h3>The honours (28 tiles)</h3>
+
+<ul>
+<li><strong>Winds:</strong> East, South, West, North — four designs, four copies each, 16 tiles.</li>
+<li><strong>Dragons:</strong> Red (中), Green (發) and White (often a blank tile or one with a blue frame) — three designs, four copies each, 12 tiles.</li>
+</ul>
+
+<h3>The bonus tiles (8 tiles)</h3>
+
+<p>Four flowers (plum, orchid, chrysanthemum, bamboo) and four seasons (spring, summer, autumn, winter). Unlike everything else, each of these eight is a unique design, appearing once.</p>
+
+<h2>The rules</h2>
+
+<h3>What makes a tile free</h3>
+
+<p>A tile can be selected only if it is <em>free</em>, sometimes called open or exposed. Two conditions must both hold:</p>
+
+<ol>
+<li><strong>Nothing sits on top of it.</strong> No tile from a higher layer may cover any part of it, even partially. In the turtle layout tiles are often offset by half a tile width, so a single upper tile can pin two lower ones.</li>
+<li><strong>At least one long side — left or right — is clear.</strong> A tile wedged between neighbours on both sides is blocked even with nothing above it. Tiles above and below it (in the vertical sense on screen) do not block; only left and right matter.</li>
+</ol>
+
+<p>This second condition is the one people misread. A tile in the middle of a long row is unavailable no matter how open it looks, and the way to free it is to clear from one end of the row inward.</p>
+
+<h3>Matching</h3>
+
+<p>Two free tiles match if they show the same design, and removing them takes both off the board. Suit tiles must match exactly: the 5 of circles pairs only with another 5 of circles, never with the 5 of bamboo. Winds pair only with the same wind; dragons only with the same dragon.</p>
+
+<p>The bonus tiles are the exception. Since all eight are unique designs, they could never be matched under the strict rule, so:</p>
+
+<ul>
+<li><strong>Any flower matches any other flower.</strong> Plum pairs happily with orchid.</li>
+<li><strong>Any season matches any other season.</strong> Spring pairs with winter.</li>
+<li><strong>Flowers do not match seasons.</strong> The two groups stay separate. This is the rule most often forgotten, and the reason a board sometimes stalls with one flower and one season left staring at each other.</li>
+</ul>
+
+<h3>Layers and winning</h3>
+
+<p>The turtle uses five layers. The base is a broad slab of 87 tiles; layers two, three and four form progressively smaller rectangles on top; a single tile crowns the peak, with a couple of tiles projecting from the sides of the base. You win by clearing all 144 tiles — 72 successful matches. You lose when no two free tiles match, even if many tiles remain.</p>
+
+<p>Worth knowing: a randomly stacked board is not guaranteed solvable. Well-implemented versions, including ours, deal only solvable layouts, which means a loss is genuinely your own doing rather than the deal's. That is good news, because it means the strategy below actually pays.</p>
+
+<h2>Strategy that actually changes results</h2>
+
+<h3>1. Work downward, not sideways</h3>
+
+<p>The strongest general heuristic is to prefer matches that remove tiles from the highest layers. Upper tiles pin lower ones, and the peak tile alone blocks a chain of tiles beneath it. Clearing depth converts locked tiles into free tiles; clearing width mostly just shortens rows you could have shortened later.</p>
+
+<p>Beginners do the opposite. The long base rows offer easy, obvious pairs at their open ends, so they get taken first — and each one removes a tile that was doing no harm while the top of the pyramid stays sealed.</p>
+
+<h3>2. Count the unblocking value of each move</h3>
+
+<p>Before taking a pair, ask what it releases. A match that frees three new tiles is worth far more than a match that frees none, even if both remove the same number of tiles from the board. Over a full game you make 72 matches; if each one is chosen for what it opens rather than for being visible, the endgame arrives with options instead of a dead board.</p>
+
+<p>A related habit: when two different pairs of the same design are available, take the copies whose removal opens the most, not the first two you spotted.</p>
+
+<h3>3. The four-of-a-kind trap</h3>
+
+<p>This is the single most important idea on the page, and the one that decides most losses.</p>
+
+<p>Every suit, wind and dragon design exists in exactly four copies. When three or four copies of a design are free at the same moment, you must choose which two to remove — and that choice can strand the remaining pair permanently.</p>
+
+<p>Suppose all four 8 of circles are free. Two sit in an open row where they will stay reachable for a long time. The other two are wedged deep in the base, each blocking a different column. Matching the two easy ones is the instinctive move and it is usually the losing one: the two buried copies now have no partner but each other, and if either becomes permanently blocked, both are dead and the game is unwinnable.</p>
+
+<p>The rule that follows: <strong>when copies of the same tile are unequally accessible, match the difficult ones together and leave the easy ones for later.</strong> Easy tiles keep their options; buried tiles do not.</p>
+
+<p>The same logic applies when only three copies are free. Look at where the fourth one is. If it is buried under two layers, pair it mentally with whichever free copy is most likely to become blocked, and remove the other two — never a combination that leaves the buried tile's only partner in a doomed position.</p>
+
+<h3>4. Respect the vulnerable positions</h3>
+
+<p>Some spots on the turtle are structurally dangerous. The tiles at the far ends of the base row can be taken almost any time, so they are safe. The tiles in the middle of the second and third layers are the opposite: they need clearance above and on one side, and both can vanish. When you see a match involving a tile in a fragile spot, take it — availability now is not availability later.</p>
+
+<h3>5. Slow down in the opening</h3>
+
+<p>The first dozen moves matter most because the board is at its most constrained, and they are also when the temptation to click quickly is highest. A useful discipline is to scan the entire board once before the first move and identify which tiles are buried deepest. Those are your long-term problems. Every early match should either free one of them or be free of consequence.</p>
+
+<h3>6. Watch the honours</h3>
+
+<p>Winds and dragons have only four and three designs respectively, so their copies cluster — twelve dragon tiles across three designs means duplicates are common and the four-of-a-kind trap comes up constantly with them. Flowers and seasons, by contrast, are your most flexible tiles, since any flower will take any other. That flexibility is a small reserve of endgame safety: a free flower is almost never a wasted tile, so there is little urgency in matching them early, and holding one back gives you an escape when the board tightens.</p>
+
+<h3>7. When to shuffle</h3>
+
+<p>Most versions offer a shuffle that redistributes the remaining tiles. Used well it is a rescue; used carelessly it turns a recoverable position into a random one.</p>
+
+<ul>
+<li><strong>Do shuffle</strong> when you have no legal moves at all and the alternative is a loss. There is nothing to lose.</li>
+<li><strong>Do shuffle</strong> when you have exactly one available match and taking it clearly frees nothing — you are one move from a dead board, and a shuffle now is worth more than a shuffle after.</li>
+<li><strong>Do not shuffle</strong> just because the board looks awkward. If three or more distinct matches exist, you still have real choices, and shuffling discards the structural knowledge you have built up about where things sit.</li>
+<li><strong>Do not shuffle</strong> early. Shuffles are usually limited, and their value rises as tiles fall — with 20 tiles left a shuffle is close to a guaranteed save, while with 120 left it barely changes your position.</li>
+</ul>
+
+<p>If your version counts shuffles or scores them against you, treat them as a genuine budget: two shuffles spent well late beats four spent reflexively.</p>
+
+<h2>A short practice routine</h2>
+
+<p>Play one game with a single rule: before every match, say out loud what it unblocks. It will feel slow and it will roughly double your win rate on the spot, because it forces the unblocking calculation into a habit. After a few games, add the second rule: whenever three or four copies of a design are visible, stop and work out which two to take. Those two habits — clear downward, and never strand a pair — cover the large majority of avoidable losses.</p>
+
+<p>Once they are automatic, the game stops being about spotting matching pictures and becomes what it actually is: a game about managing access to a shrinking set of resources under a rule that punishes you many moves after the mistake.</p>
+
+</article>
+</main>
+<footer class="site-footer">
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../guides/index.html">Guides</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+    <a href="../privacy.html">Privacy Policy</a>
+    <a href="../terms.html">Terms of Use</a>
+  </nav>
+  <p>&copy; 2026 Puzzle Planet. All rights reserved.</p>
+</footer>
+</body>
+</html>

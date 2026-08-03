@@ -1,0 +1,257 @@
+/* SolitaireRealm — Content & Article Pages */
+
+:root {
+  --c-bg: #14142b;
+  --c-bg-alt: #1b1b3a;
+  --c-surface: #1e1e3f;
+  --c-text: #e9e9f2;
+  --c-muted: #a6a6c0;
+  --c-accent: #e94560;
+  --c-accent-soft: rgba(233, 69, 96, 0.15);
+  --c-border: rgba(255, 255, 255, 0.1);
+  --c-max: 760px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============ Header ============ */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 22px;
+  background: rgba(15, 15, 35, 0.97);
+  border-bottom: 1px solid var(--c-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand {
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--c-text);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+
+.brand:hover { color: var(--c-accent); }
+
+.site-nav {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.site-nav a {
+  color: var(--c-muted);
+  text-decoration: none;
+  font-size: 0.94rem;
+  font-weight: 600;
+}
+
+.site-nav a:hover { color: var(--c-accent); }
+
+/* ============ Main content ============ */
+.content {
+  max-width: var(--c-max);
+  margin: 0 auto;
+  padding: 40px 22px 64px;
+}
+
+.content h1 {
+  font-size: clamp(1.9rem, 5vw, 2.5rem);
+  line-height: 1.2;
+  margin: 0 0 0.6em;
+  letter-spacing: -0.02em;
+}
+
+.content h2 {
+  font-size: clamp(1.35rem, 3.4vw, 1.65rem);
+  line-height: 1.3;
+  margin: 2.2em 0 0.7em;
+  padding-bottom: 0.35em;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.content h3 {
+  font-size: 1.15rem;
+  margin: 1.8em 0 0.5em;
+  color: #f4f4fb;
+}
+
+.content p { margin: 0 0 1.15em; }
+
+.content a {
+  color: var(--c-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.content ul,
+.content ol {
+  margin: 0 0 1.3em;
+  padding-left: 1.5em;
+}
+
+.content li { margin-bottom: 0.55em; }
+
+.content strong { color: #fff; font-weight: 700; }
+
+.content blockquote {
+  margin: 1.5em 0;
+  padding: 0.9em 1.2em;
+  background: var(--c-accent-soft);
+  border-left: 3px solid var(--c-accent);
+  border-radius: 0 8px 8px 0;
+  color: #f0f0f8;
+}
+
+.content blockquote p:last-child { margin-bottom: 0; }
+
+.content code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* Tables scroll on narrow screens rather than breaking layout */
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.95rem;
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.content th,
+.content td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.content th {
+  background: var(--c-surface);
+  font-weight: 700;
+  color: #fff;
+}
+
+.content tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
+
+@media (min-width: 700px) {
+  .content table { display: table; white-space: normal; }
+}
+
+/* ============ Guide index cards ============ */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+  margin: 1.8em 0;
+}
+
+.guide-card {
+  display: block;
+  padding: 20px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  text-decoration: none !important;
+  color: var(--c-text) !important;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.guide-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--c-accent);
+}
+
+.guide-card h3 {
+  margin: 0 0 0.4em;
+  font-size: 1.08rem;
+  color: #fff;
+}
+
+.guide-card p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--c-muted);
+  line-height: 1.6;
+}
+
+/* ============ Play call-to-action ============ */
+.play-cta {
+  display: inline-block;
+  margin: 0.5em 0 1.5em;
+  padding: 13px 28px;
+  background: var(--c-accent);
+  color: #fff !important;
+  font-weight: 700;
+  border-radius: 10px;
+  text-decoration: none !important;
+}
+
+.play-cta:hover { filter: brightness(1.1); }
+
+/* ============ Footer ============ */
+.site-footer {
+  border-top: 1px solid var(--c-border);
+  background: var(--c-bg-alt);
+  padding: 30px 22px 38px;
+  text-align: center;
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 22px;
+  margin-bottom: 16px;
+}
+
+.site-footer a {
+  color: var(--c-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.site-footer a:hover { color: var(--c-accent); }
+
+.site-footer p {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 0.84rem;
+}
+
+/* ============ Meta line under article titles ============ */
+.article-meta {
+  color: var(--c-muted);
+  font-size: 0.88rem;
+  margin: -0.5em 0 2em !important;
+}
+
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .site-header { padding: 12px 16px; }
+  .site-nav { gap: 14px; }
+  .content { padding: 28px 16px 48px; }
+}

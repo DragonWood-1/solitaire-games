@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sudoku Techniques: From Scanning to X-Wing and Swordfish | Puzzle Planet</title>
+<meta name="description" content="Learn sudoku solving techniques in order: scanning, naked and hidden singles, naked pairs, pointing pairs, box-line reduction, X-Wing and swordfish.">
+<link rel="canonical" href="https://puzzleplanetonline.com/guides/sudoku-techniques.html">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8788099801042098" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="../css/content.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="../index.html">🧩 Puzzle Planet</a>
+  <nav class="site-nav">
+    <a href="../index.html">Play Solitaire</a>
+    <a href="../guides/index.html">Guides</a>
+    <a href="../about.html">About</a>
+  </nav>
+</header>
+<main class="content">
+<article>
+<h1>Sudoku Techniques: A Complete Progression from Scanning to Swordfish</h1>
+
+<p>Sudoku has exactly one rule, and it is possible to state it in a single sentence. Everything else — every technique in this guide, every "expert" grid you have ever stared at for twenty minutes — is a consequence of that rule applied with more patience. That is the reassuring thing about sudoku: there is nothing hidden. If you cannot see the next move, the information is still there; you simply have not yet learned the shape it takes.</p>
+
+<p>This guide walks the techniques in the order a solver actually needs them, from the ones that crack an easy grid in five minutes to the ones that break open a genuinely hard puzzle. Each is explained concretely enough that you can go and use it today. Read them in order — the later techniques depend on the notation habits the earlier ones build.</p>
+
+<h2>The Rule</h2>
+
+<p>A sudoku grid is nine rows by nine columns, subdivided into nine three-by-three boxes. Fill every empty cell with a digit from 1 to 9 so that <strong>each digit appears exactly once in every row, every column, and every box</strong>. That is the whole rule. There is no arithmetic and no guesswork in a properly constructed puzzle: a valid sudoku has exactly one solution, and that solution is reachable by pure deduction.</p>
+
+<p>The three groups — row, column, box — are collectively called <em>units</em>, and every cell belongs to exactly three of them. Almost every technique below is a statement about what must be true inside one unit, or about how two units interact where they overlap. Once you start thinking in units rather than in individual cells, hard puzzles get noticeably easier.</p>
+
+<h2>Candidate Notation: The Habit That Makes Everything Else Possible</h2>
+
+<p>Before the techniques, a word about bookkeeping. Beginners solve by looking at the grid; everyone else solves by writing <strong>candidates</strong> — small pencil marks in each empty cell listing every digit that could still legally go there. You produce them by taking the digits 1–9 and eliminating any that already appear in the cell's row, column, or box.</p>
+
+<p>Candidate marking feels tedious for the first few puzzles and then becomes automatic. It matters because every technique from naked pairs onward is a statement about candidate lists, not about filled digits. If you are stuck on medium puzzles and refusing to pencil-mark, that alone is usually the reason. Most digital sudoku implementations, including the ones on this site, will maintain candidate marks for you.</p>
+
+<h2>Technique 1: Scanning (Cross-Hatching)</h2>
+
+<p>Scanning is how you start every puzzle, and on easy grids it is how you finish them too. Pick a digit — say 7 — and look at a box that does not yet contain one. Now trace the rows and columns that pass through that box. Any row already containing a 7 cannot host another one, so every cell in that row inside your box is eliminated. Same for columns. Strike out everything the existing 7s can see, and quite often exactly one cell in the box survives. That cell must be 7.</p>
+
+<p>Work one digit at a time across all nine boxes before moving to the next digit. This is far more efficient than wandering the grid, because your eye stays tuned to a single number. A useful refinement: start with the digits that already appear most often on the grid, since they cast the most eliminating lines and are most likely to resolve.</p>
+
+<h2>Technique 2: Naked Singles</h2>
+
+<p>A <strong>naked single</strong> is a cell whose candidate list has been reduced to exactly one digit. If a cell can only be 4, it is 4. That is the entire technique, and it sounds too obvious to name — but naming it matters, because a naked single is what a cell looks like <em>from the inside</em>, and the next technique is the same idea seen from the outside.</p>
+
+<p>The practical skill is not spotting naked singles; it is knowing when to look for them. Every time you place a digit, it removes that digit from the candidate lists of up to twenty other cells. Those removals frequently create new naked singles, which create more, cascading through the grid. So after every placement, immediately re-check the cells that placement touched. Easy puzzles are essentially one long cascade of naked singles.</p>
+
+<h2>Technique 3: Hidden Singles</h2>
+
+<p>A <strong>hidden single</strong> is a digit that has only one possible home within a unit, even though the cell it belongs in has several candidates of its own. Suppose in one row the digit 3 appears as a candidate in exactly one cell — never mind that the cell also lists 3, 6 and 8. Since the row must contain a 3 somewhere, and there is only one place it can go, that cell is 3. The 6 and 8 are eliminated.</p>
+
+<p>Hidden singles are the technique that most separates a stuck solver from a moving one, because they are invisible if you only look at cells. You have to look at digits: pick a number, pick a unit, count how many cells in that unit can still take it. One means solved. Scanning is really just hidden-single detection performed by eye inside boxes; doing it deliberately in rows and columns as well will unstick most "medium" puzzles.</p>
+
+<h2>Technique 4: Naked Pairs, Triples and Quads</h2>
+
+<p>Now the techniques stop placing digits and start removing candidates — which is what real solving mostly consists of.</p>
+
+<p>Suppose two cells in the same row both have exactly the candidate list {4, 7}. You do not know which is which, but you know something powerful: between them, those two cells consume both the 4 and the 7 for that entire row. Therefore no other cell in the row can be 4 or 7, and you may erase those candidates everywhere else along it. That is a <strong>naked pair</strong>. If the two cells also share a box, the same eliminations apply inside the box.</p>
+
+<p>The idea generalises cleanly. A <strong>naked triple</strong> is three cells in one unit whose candidates, combined, cover exactly three digits — and importantly, the individual cells need not each list all three. Cells showing {2,5}, {5,9} and {2,9} form a perfect naked triple on {2,5,9}, because those three digits are locked into those three cells no matter how they sort themselves out. A <strong>naked quad</strong> is the same argument with four cells and four digits; it is rare, and it is genuinely hard to spot, but it follows the identical logic.</p>
+
+<p>There are hidden pairs and triples too, mirroring hidden singles: if two digits appear as candidates in only two cells of a unit, those two cells must hold those two digits, and every other candidate in them can be erased. Hidden subsets are harder to see but come up often in well-made hard puzzles.</p>
+
+<h2>Technique 5: Pointing Pairs (Locked Candidates)</h2>
+
+<p>Pointing pairs exploit the overlap between a box and a line. Look at a single box and a single digit — say 5. If every cell in that box that can still be 5 happens to sit in the same row, then the box's 5 is definitely somewhere in that row, even though you do not know which cell. And since the row can hold only one 5, every <em>other</em> cell in that row — all six cells outside the box — cannot be 5. Erase them.</p>
+
+<p>The same works with columns, and with two or three candidate cells. The name comes from the image of the candidates inside the box "pointing" along the line and clearing it. This is the first technique with real reach: it lets a deduction made inside one box propagate right across the grid, and it is often the move that breaks a puzzle that has gone quiet.</p>
+
+<h2>Technique 6: Box-Line Reduction</h2>
+
+<p>Box-line reduction is pointing pairs run backwards, and solvers who learn one often forget to check for the other. This time, start with a line. If within a row, every cell that can still be 8 lies inside a single box, then the row's 8 is in that box. Consequently the 8 cannot appear anywhere else <em>in that box</em> — you erase 8 from the box's other six cells, including the ones in completely different rows.</p>
+
+<p>The distinction is worth internalising:</p>
+
+<ul>
+<li><strong>Pointing:</strong> candidates confined to a line <em>within a box</em> → eliminate along the rest of the line.</li>
+<li><strong>Box-line reduction:</strong> candidates confined to a box <em>within a line</em> → eliminate elsewhere in the box.</li>
+</ul>
+
+<p>Together these two are called locked candidates, and between them they resolve the large majority of positions that stall after singles and naked pairs run out.</p>
+
+<h2>Technique 7: X-Wing</h2>
+
+<p>The X-Wing is the first technique that feels like a genuine leap, and it is the gateway to advanced solving. It works on a single digit across four cells arranged at the corners of a rectangle.</p>
+
+<p>Pick a digit — say 6. Find two rows in which 6 appears as a candidate in exactly two cells each. Now check whether those pairs sit in the <em>same two columns</em>. If they do, you have an X-Wing, and the conclusion is this: whichever way the puzzle resolves, one of those two rows puts its 6 in the left column and the other puts its 6 in the right column. There is no other option, because if both rows chose the same column, that column would contain two 6s. So between them, those four cells claim the 6 for both columns entirely — and you may erase 6 from every other cell in those two columns.</p>
+
+<p>The pattern is symmetric: you can equally find it starting with two columns that each have exactly two candidates for a digit lying in the same two rows, and then eliminate along the rows. Note that the X-Wing never places a digit directly. Its whole value is in the eliminations, which then unlock singles elsewhere. When a hard puzzle refuses to move, scanning digit by digit for candidate pairs that line up into a rectangle is the most productive thing you can do.</p>
+
+<h2>Technique 8: Swordfish</h2>
+
+<p>A swordfish is an X-Wing with three rows and three columns instead of two and two. Take a single digit. Find three rows in which that digit's candidates are confined to the same three columns overall. Each row may have two or three candidates — it does not need all three, and the pattern is usually easier to find if you allow the ragged versions. Because those three rows must each place the digit somewhere in those three columns, and there are exactly three of each, the three columns are entirely spoken for. You can therefore eliminate that digit from every other cell in those three columns.</p>
+
+<p>Swordfish are rarer than X-Wings and considerably harder to spot by eye; the practical method is to pick a digit, list which columns its candidates occupy for each row, and look for three rows whose column-sets union to exactly three. The family continues upward — four rows and four columns is a jellyfish — but beyond swordfish the patterns are so scarce that most solvers reach for other advanced tools such as colouring or chains instead.</p>
+
+<h2>Difficulty Ratings and What They Actually Mean</h2>
+
+<p>Puzzle difficulty is not about how many digits are given at the start. A grid with 26 clues can be trivial and one with 30 can be brutal. What determines difficulty is the <em>hardest technique required</em> to solve the grid without guessing, and, secondarily, how often that technique is needed and how well hidden it is.</p>
+
+<table>
+<thead><tr><th>Rating</th><th>Typically requires</th></tr></thead>
+<tbody>
+<tr><td>Easy</td><td>Scanning and naked singles alone</td></tr>
+<tr><td>Medium</td><td>Hidden singles, some candidate marking</td></tr>
+<tr><td>Hard</td><td>Naked and hidden pairs, pointing pairs, box-line reduction</td></tr>
+<tr><td>Expert</td><td>Naked triples, X-Wing, and other multi-unit patterns</td></tr>
+<tr><td>Diabolical</td><td>Swordfish, colouring, forcing chains and similar</td></tr>
+</tbody>
+</table>
+
+<p>Ratings are not standardised between publishers, so one source's "hard" may be another's "medium." Treat the label as a rough promise about which tools you will need rather than as a measurement.</p>
+
+<h2>Why Guessing Is a Last Resort</h2>
+
+<p>Every properly constructed sudoku has a unique solution reachable by logic alone, which means a guess is always an admission that you have not found the deduction — not that one does not exist. That distinction matters for three practical reasons.</p>
+
+<p>First, guessing costs more than it saves. A wrong guess does not announce itself; it quietly propagates for another ten or fifteen placements before producing a contradiction, and by then you cannot tell which entries were sound and which were downstream of the mistake. Unwinding that is usually slower than simply having looked harder.</p>
+
+<p>Second, guessing teaches you nothing. The moment you were stuck was the moment the puzzle was about to teach you a pattern. Skipping past it with a coin flip means you will be equally stuck next time. The solvers who progress are the ones who, when the grid goes quiet, systematically re-run their checklist: singles, then hidden singles, then pairs, then pointing and box-line, then X-Wing — rather than picking a cell with two candidates and hoping.</p>
+
+<p>Third, there is a legitimate structured version of trial and error, and it is worth distinguishing from guessing. Techniques such as colouring and forcing chains work by following the consequences of a candidate being true or false until one branch produces a contradiction — then eliminating it. That is deduction with a longer chain of reasoning, and it is written down and verifiable. Random guessing is not.</p>
+
+<h2>A Practical Solving Order</h2>
+
+<ol>
+<li>Scan each digit across all boxes and place whatever falls out.</li>
+<li>Pencil in full candidate lists once scanning stops producing placements.</li>
+<li>Sweep for naked singles, then hidden singles in every row, column and box.</li>
+<li>Look for naked and hidden pairs and triples; erase the candidates they exclude.</li>
+<li>Check every box for pointing candidates, and every line for box-line reduction.</li>
+<li>Re-run steps 3 and 4 — eliminations almost always create new singles.</li>
+<li>Only if the grid is still frozen, hunt digit by digit for an X-Wing, then a swordfish.</li>
+</ol>
+
+<p>The loop in step 6 is the part beginners skip. Advanced techniques are not usually needed twice in a row; one good elimination generally reopens the simpler machinery, and the puzzle finishes with singles. Work the cheap techniques until they are genuinely exhausted, and reach for the exotic ones only when they are.</p>
+
+</article>
+</main>
+<footer class="site-footer">
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../guides/index.html">Guides</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+    <a href="../privacy.html">Privacy Policy</a>
+    <a href="../terms.html">Terms of Use</a>
+  </nav>
+  <p>&copy; 2026 Puzzle Planet. All rights reserved.</p>
+</footer>
+</body>
+</html>

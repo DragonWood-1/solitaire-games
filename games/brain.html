@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brain Games - Puzzle Planet</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d1a;color:#e8e0ff;font-family:'Segoe UI',sans-serif;min-height:100vh}
+.game-nav{background:#16213e;padding:12px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;border-bottom:2px solid #e94560;position:sticky;top:0;z-index:100}
+.nav-logo{color:#e94560;font-size:1.3rem;font-weight:700;text-decoration:none}
+.nav-links{display:flex;gap:12px;flex-wrap:wrap}
+.nav-links a{color:#e8e0ff;text-decoration:none;padding:4px 10px;border-radius:6px;font-size:0.9rem;transition:background 0.2s}
+.nav-links a:hover{background:#e9456033}
+.nav-links a.active{background:#e94560;color:#fff}
+h1{text-align:center;padding:12px;color:#e94560;font-size:1.6rem}
+.game-tabs{display:flex;justify-content:center;gap:8px;padding:12px;flex-wrap:wrap}
+.tab{background:#2a2a4a;color:#a8a0cc;border:2px solid #3a3a5a;border-radius:8px;padding:9px 20px;cursor:pointer;font-size:0.9rem;transition:all 0.2s}
+.tab.active{background:#e9456033;color:#e94560;border-color:#e94560}
+.game-panel{display:none;max-width:700px;margin:0 auto;padding:16px}
+.game-panel.active{display:block}
+.score-bar{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;padding:10px 20px;margin-bottom:16px}
+.score-item{color:#a8a0cc;font-size:0.9rem}
+.score-item span{color:#e8e0ff;font-weight:700}
+.btn{background:#e94560;color:#fff;border:none;border-radius:8px;padding:9px 18px;cursor:pointer;font-size:0.9rem;transition:background 0.2s;margin:4px}
+.btn:hover{background:#c73450}
+.btn-sec{background:#2a2a4a;color:#e8e0ff;border:1px solid #3a3a5a}
+.btn-sec:hover{background:#3a3a5a}
+.action-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.section-title{color:#e94560;font-size:1rem;text-align:center;margin-bottom:12px;font-weight:700}
+.status-msg{text-align:center;font-weight:700;font-size:1rem;min-height:28px;padding:6px;border-radius:8px}
+.status-msg.correct{color:#4a9a4a;background:#4a9a4a22}
+.status-msg.wrong{color:#e94560;background:#e9456022}
+.status-msg.info{color:#e9a020;background:#e9a02022}
+
+/* ===== MEMORY MATCH ===== */
+.diff-btns{display:flex;gap:8px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
+.diff-btn{background:#2a2a4a;color:#a8a0cc;border:1px solid #3a3a5a;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:0.82rem;transition:all 0.2s}
+.diff-btn.active{background:#e9456033;color:#e94560;border-color:#e94560}
+#mem-grid{display:grid;gap:8px;justify-content:center;margin:8px auto}
+.mem-card{aspect-ratio:1;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:2rem;background:#16213e;border:2px solid #3a3a5a;transition:all 0.3s;user-select:none;perspective:600px}
+.mem-card.flipped,.mem-card.matched{border-color:#e94560;background:#2a2a4a}
+.mem-card.matched{border-color:#4a9a4a;background:#1a2a1a;cursor:default}
+.mem-card.flipped{transform:scale(1.05)}
+.mem-card.back-shown{font-size:1.5rem;color:#3a3a5a}
+
+/* ===== SEQUENCE MEMORY ===== */
+#seq-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:300px;margin:16px auto}
+.seq-cell{aspect-ratio:1;border-radius:12px;background:#16213e;border:3px solid #2a2a4a;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;font-size:1.8rem}
+.seq-cell.lit{background:#e9456088;border-color:#e94560;transform:scale(0.95)}
+.seq-cell.user-lit{background:#4a9a4a88;border-color:#4a9a4a}
+.seq-cell.wrong-lit{background:#e9456088;border-color:#e94560}
+#seq-msg{text-align:center;color:#a8a0cc;min-height:28px;font-size:0.95rem;padding:4px}
+
+/* ===== MATH SPRINT ===== */
+.math-problem{text-align:center;font-size:2.5rem;font-weight:700;color:#e8e0ff;margin:16px 0;background:#16213e;border-radius:12px;padding:20px;border:1px solid #2a2a4a}
+.math-choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:380px;margin:0 auto}
+.math-choice{background:#2a2a4a;color:#e8e0ff;border:2px solid #3a3a5a;border-radius:10px;padding:14px;cursor:pointer;font-size:1.2rem;font-weight:700;text-align:center;transition:all 0.2s}
+.math-choice:hover{border-color:#e94560;background:#e9456022}
+.math-choice.correct-ans{border-color:#4a9a4a;background:#4a9a4a22;color:#4a9a4a}
+.math-choice.wrong-ans{border-color:#e94560;background:#e9456022;color:#e94560}
+.timer-bar{height:10px;background:#1a1a2e;border-radius:5px;overflow:hidden;max-width:400px;margin:8px auto}
+.timer-fill{height:100%;background:linear-gradient(90deg,#4a9a4a,#e9a020,#e94560);border-radius:5px;transition:width 0.5s linear}
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8788099801042098" crossorigin="anonymous"></script>
+</head>
+<body>
+<nav class="game-nav">
+  <a href="../index.html" class="nav-logo">🃏 Puzzle Planet</a>
+  <div class="nav-links">
+    <a href="../index.html">Solitaire</a>
+    <a href="../games/chess.html">Chess</a>
+    <a href="../games/sudoku.html">Sudoku</a>
+    <a href="../games/mahjong.html">Mahjong</a>
+    <a href="../games/crossword.html">Crossword</a>
+    <a href="../games/poker.html">Poker</a>
+    <a href="../games/brain.html" class="active">Brain Games</a>
+  </div>
+</nav>
+<h1>🧠 Brain Games</h1>
+<div class="game-tabs">
+  <div class="tab active" onclick="switchGame('memory')">🃏 Memory Match</div>
+  <div class="tab" onclick="switchGame('sequence')">🔢 Sequence</div>
+  <div class="tab" onclick="switchGame('math')">➗ Math Sprint</div>
+</div>
+
+<!-- ===== MEMORY MATCH ===== -->
+<div class="game-panel active" id="panel-memory">
+  <div class="score-bar">
+    <div class="score-item">Moves: <span id="mem-moves">0</span></div>
+    <div class="score-item">Matches: <span id="mem-matches">0</span></div>
+    <div class="score-item">⏱ <span id="mem-timer">0:00</span></div>
+    <div class="score-item">Best: <span id="mem-best">--</span></div>
+  </div>
+  <div class="diff-btns">
+    <div class="diff-btn active" id="mem-diff-sm" onclick="setMemDiff(4,4)">4×4</div>
+    <div class="diff-btn" id="mem-diff-md" onclick="setMemDiff(4,6)">4×6</div>
+    <div class="diff-btn" id="mem-diff-lg" onclick="setMemDiff(6,6)">6×6</div>
+  </div>
+  <div id="mem-status" class="status-msg"></div>
+  <div id="mem-grid"></div>
+  <div class="action-btns"><button class="btn" onclick="newMemoryGame()">New Game</button></div>
+</div>
+
+<!-- ===== SEQUENCE MEMORY ===== -->
+<div class="game-panel" id="panel-sequence">
+  <div class="score-bar">
+    <div class="score-item">Level: <span id="seq-level">1</span></div>
+    <div class="score-item">Best: <span id="seq-best">0</span></div>
+  </div>
+  <div id="seq-msg">Press Start to begin!</div>
+  <div id="seq-grid"></div>
+  <div class="action-btns">
+    <button class="btn" onclick="startSequence()">Start / Next</button>
+    <button class="btn btn-sec" onclick="resetSequence()">Reset</button>
+  </div>
+</div>
+
+<!-- ===== MATH SPRINT ===== -->
+<div class="game-panel" id="panel-math">
+  <div class="score-bar">
+    <div class="score-item">Score: <span id="math-score">0</span></div>
+    <div class="score-item">Correct: <span id="math-correct">0</span></div>
+    <div class="score-item">⏱ <span id="math-timer">60</span>s</div>
+    <div class="score-item">Best: <span id="math-best">0</span></div>
+  </div>
+  <div class="timer-bar"><div class="timer-fill" id="math-timer-fill" style="width:100%"></div></div>
+  <div id="math-status" class="status-msg"></div>
+  <div class="math-problem" id="math-problem">Press Start!</div>
+  <div class="math-choices" id="math-choices"></div>
+  <div class="action-btns"><button class="btn" id="math-start-btn" onclick="startMath()">Start Game</button></div>
+</div>
+
+<script>
+function switchGame(name) {
+  document.querySelectorAll('.tab').forEach(t => t.className = 'tab');
+  document.querySelectorAll('.game-panel').forEach(p => p.className = 'game-panel');
+  const names = ['memory','sequence','math'];
+  document.querySelectorAll('.tab')[names.indexOf(name)].className = 'tab active';
+  document.getElementById('panel-'+name).className = 'game-panel active';
+}
+
+// ============================================================
+// GAME 1: MEMORY MATCH
+// ============================================================
+const MEM_EMOJIS = ['🎴','🃏','🎲','🎯','🎮','🎰','🀄','🃏','♠','♥','♦','♣','🎪','🎨','🎭','🎬','🎵','🎸'];
+let memCols=4, memRows=4;
+let memCards=[], memFlipped=[], memMatched=0, memMoves=0;
+let memLocked=false;
+let memTimerSecs=0, memTimerInterval;
+let memGameActive=false;
+let memBest={'4x4':null,'4x6':null,'6x6':null};
+
+function setMemDiff(c, r) {
+  memCols=c; memRows=r;
+  document.querySelectorAll('.diff-btn').forEach(b => b.className='diff-btn');
+  document.getElementById('mem-diff-sm').className='diff-btn'+(c===4&&r===4?' active':'');
+  document.getElementById('mem-diff-md').className='diff-btn'+(c===4&&r===6?' active':'');
+  document.getElementById('mem-diff-lg').className='diff-btn'+(c===6&&r===6?' active':'');
+  newMemoryGame();
+}
+
+function newMemoryGame() {
+  clearInterval(memTimerInterval);
+  const totalCards = memCols * memRows;
+  const pairs = totalCards / 2;
+  const emojis = MEM_EMOJIS.slice(0, pairs);
+  const deck = [...emojis, ...emojis];
+  // Shuffle
+  for (let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+  memCards = deck.map((e,i) => ({id:i, emoji:e, flipped:false, matched:false}));
+  memFlipped=[]; memMatched=0; memMoves=0; memLocked=false;
+  memTimerSecs=0; memGameActive=true;
+  document.getElementById('mem-moves').textContent=0;
+  document.getElementById('mem-matches').textContent=0;
+  document.getElementById('mem-status').textContent='';
+  document.getElementById('mem-status').className='status-msg';
+  document.getElementById('mem-timer').textContent='0:00';
+  memTimerInterval=setInterval(()=>{memTimerSecs++;document.getElementById('mem-timer').textContent=Math.floor(memTimerSecs/60)+':'+(memTimerSecs%60<10?'0':'')+memTimerSecs%60;},1000);
+  renderMemGrid();
+}
+
+function renderMemGrid() {
+  const grid=document.getElementById('mem-grid');
+  const cardSize = memCols===6 ? Math.min(80, Math.floor((window.innerWidth-80)/6)) : Math.min(95, Math.floor((window.innerWidth-60)/memCols));
+  grid.style.gridTemplateColumns='repeat('+memCols+','+cardSize+'px)';
+  grid.innerHTML='';
+  memCards.forEach((card,idx)=>{
+    const el=document.createElement('div');
+    el.style.width=cardSize+'px'; el.style.height=cardSize+'px';
+    el.style.fontSize=Math.floor(cardSize*0.45)+'px';
+    if (card.matched) {
+      el.className='mem-card matched';
+      el.textContent=card.emoji;
+    } else if (card.flipped) {
+      el.className='mem-card flipped';
+      el.textContent=card.emoji;
+    } else {
+      el.className='mem-card back-shown';
+      el.textContent='?';
+    }
+    el.addEventListener('click',()=>flipCard(idx));
+    grid.appendChild(el);
+  });
+}
+
+function flipCard(idx) {
+  if (memLocked||!memGameActive) return;
+  const card=memCards[idx];
+  if (card.flipped||card.matched) return;
+  card.flipped=true;
+  memFlipped.push(idx);
+  renderMemGrid();
+  if (memFlipped.length===2) {
+    memMoves++;
+    document.getElementById('mem-moves').textContent=memMoves;
+    memLocked=true;
+    const [a,b]=memFlipped;
+    if (memCards[a].emoji===memCards[b].emoji) {
+      memCards[a].matched=memCards[b].matched=true;
+      memMatched++;
+      document.getElementById('mem-matches').textContent=memMatched;
+      memFlipped=[];
+      memLocked=false;
+      renderMemGrid();
+      const total=memCols*memRows/2;
+      if (memMatched===total) {
+        memGameActive=false; clearInterval(memTimerInterval);
+        const key=memCols+'x'+memRows;
+        if (!memBest[key]||memMoves<memBest[key]) memBest[key]=memMoves;
+        document.getElementById('mem-best').textContent=memBest[key];
+        const st=document.getElementById('mem-status');
+        st.textContent='Completed in '+memMoves+' moves & '+Math.floor(memTimerSecs/60)+':'+(memTimerSecs%60<10?'0':'')+memTimerSecs%60+'!';
+        st.className='status-msg correct';
+      }
+    } else {
+      setTimeout(()=>{memCards[a].flipped=memCards[b].flipped=false;memFlipped=[];memLocked=false;renderMemGrid();},900);
+    }
+  }
+}
+
+// ============================================================
+// GAME 2: SEQUENCE MEMORY
+// ============================================================
+const SEQ_EMOJIS=['🔴','🟠','🟡','🟢','🔵','🟣','🟤','⚫','⚪'];
+let seqSequence=[], seqPlayerInput=[], seqLevel=1, seqBest=0;
+let seqPhase='idle'; // idle, showing, waiting
+let seqCells=[];
+
+function buildSeqGrid() {
+  const g=document.getElementById('seq-grid'); g.innerHTML='';
+  seqCells=[];
+  for (let i=0;i<9;i++){
+    const c=document.createElement('div');
+    c.className='seq-cell';
+    c.textContent=SEQ_EMOJIS[i];
+    c.style.fontSize='1.6rem';
+    c.addEventListener('click',()=>seqCellClick(i));
+    g.appendChild(c);
+    seqCells.push(c);
+  }
+}
+
+function resetSequence() {
+  seqSequence=[]; seqPlayerInput=[]; seqLevel=1;
+  seqPhase='idle';
+  document.getElementById('seq-level').textContent=1;
+  document.getElementById('seq-msg').textContent='Press Start to begin!';
+  buildSeqGrid();
+}
+
+function startSequence() {
+  if (seqPhase==='showing') return;
+  seqPlayerInput=[];
+  if (seqPhase==='idle'||seqPhase==='correct') {
+    seqSequence.push(Math.floor(Math.random()*9));
+    seqLevel=seqSequence.length;
+    document.getElementById('seq-level').textContent=seqLevel;
+  }
+  seqPhase='showing';
+  document.getElementById('seq-msg').textContent='Watch the sequence...';
+  showSequence(0);
+}
+
+function showSequence(idx) {
+  if (idx>=seqSequence.length) {
+    seqPhase='waiting';
+    document.getElementById('seq-msg').textContent='Your turn! Repeat the sequence ('+seqSequence.length+' steps)';
+    return;
+  }
+  const cell=seqCells[seqSequence[idx]];
+  setTimeout(()=>{
+    cell.className='seq-cell lit';
+    setTimeout(()=>{cell.className='seq-cell';showSequence(idx+1);},500);
+  },400*idx+200);
+}
+
+function seqCellClick(idx) {
+  if (seqPhase!=='waiting') return;
+  const cell=seqCells[idx];
+  const expected=seqSequence[seqPlayerInput.length];
+  seqPlayerInput.push(idx);
+  if (idx===expected) {
+    cell.className='seq-cell user-lit';
+    setTimeout(()=>cell.className='seq-cell',300);
+    if (seqPlayerInput.length===seqSequence.length) {
+      seqPhase='correct';
+      if (seqLevel>seqBest){seqBest=seqLevel;document.getElementById('seq-best').textContent=seqBest;}
+      document.getElementById('seq-msg').textContent='Correct! Level '+seqLevel+' cleared! Press Start for next.';
+    }
+  } else {
+    cell.className='seq-cell wrong-lit';
+    setTimeout(()=>cell.className='seq-cell',400);
+    seqPhase='idle';
+    if (seqLevel>seqBest){seqBest=seqLevel;document.getElementById('seq-best').textContent=seqBest;}
+    document.getElementById('seq-msg').textContent='Wrong! You reached level '+seqLevel+'. Press Start to try again.';
+    seqSequence=[]; seqLevel=1;
+    document.getElementById('seq-level').textContent=1;
+  }
+}
+
+// ============================================================
+// GAME 3: MATH SPRINT
+// ============================================================
+let mathScore=0, mathCorrect=0, mathTotal=60, mathRemaining=60;
+let mathTimerInterval;
+let mathActive=false;
+let mathCurrentAnswer=0;
+let mathBest=0;
+let mathAnswered=false;
+
+function startMath() {
+  clearInterval(mathTimerInterval);
+  mathScore=0; mathCorrect=0; mathRemaining=60;
+  mathActive=true; mathAnswered=false;
+  document.getElementById('math-score').textContent=0;
+  document.getElementById('math-correct').textContent=0;
+  document.getElementById('math-timer').textContent=60;
+  document.getElementById('math-timer-fill').style.width='100%';
+  document.getElementById('math-status').textContent='';
+  document.getElementById('math-status').className='status-msg';
+  document.getElementById('math-start-btn').textContent='Restart';
+  nextMathProblem();
+  mathTimerInterval=setInterval(()=>{
+    mathRemaining--;
+    document.getElementById('math-timer').textContent=mathRemaining;
+    document.getElementById('math-timer-fill').style.width=(mathRemaining/60*100)+'%';
+    if (mathRemaining<=0) {
+      mathActive=false; clearInterval(mathTimerInterval);
+      if (mathScore>mathBest){mathBest=mathScore;document.getElementById('math-best').textContent=mathBest;}
+      document.getElementById('math-problem').textContent='Time!';
+      document.getElementById('math-choices').innerHTML='';
+      const st=document.getElementById('math-status');
+      st.textContent='Game over! Score: '+mathScore+', Correct: '+mathCorrect;
+      st.className='status-msg info';
+      document.getElementById('math-timer-fill').style.width='0';
+    }
+  },1000);
+}
+
+function nextMathProblem() {
+  if (!mathActive) return;
+  mathAnswered=false;
+  const ops=['+','-','×'];
+  const op=ops[Math.floor(Math.random()*ops.length)];
+  let a,b,ans;
+  if (op==='+'){a=Math.floor(Math.random()*50)+1;b=Math.floor(Math.random()*50)+1;ans=a+b;}
+  else if (op==='-'){a=Math.floor(Math.random()*50)+10;b=Math.floor(Math.random()*a)+1;ans=a-b;}
+  else{a=Math.floor(Math.random()*12)+2;b=Math.floor(Math.random()*12)+2;ans=a*b;}
+  mathCurrentAnswer=ans;
+  document.getElementById('math-problem').textContent=a+' '+op+' '+b+' = ?';
+  // Generate 4 choices
+  const choices=new Set([ans]);
+  while (choices.size<4){
+    const delta=Math.floor(Math.random()*20)-10;
+    const w=ans+delta;
+    if (w!==ans&&w>-1000)choices.add(w);
+  }
+  const choiceArr=[...choices];
+  // Shuffle choices
+  for (let i=choiceArr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[choiceArr[i],choiceArr[j]]=[choiceArr[j],choiceArr[i]];}
+  const div=document.getElementById('math-choices'); div.innerHTML='';
+  choiceArr.forEach(val=>{
+    const btn=document.createElement('div');
+    btn.className='math-choice'; btn.textContent=val;
+    btn.addEventListener('click',()=>mathAnswer(btn,val));
+    div.appendChild(btn);
+  });
+  document.getElementById('math-status').textContent='';
+  document.getElementById('math-status').className='status-msg';
+}
+
+function mathAnswer(btn, val) {
+  if (!mathActive||mathAnswered) return;
+  mathAnswered=true;
+  const correct = val===mathCurrentAnswer;
+  if (correct) {
+    btn.className='math-choice correct-ans';
+    mathScore+=10; mathCorrect++;
+    document.getElementById('math-score').textContent=mathScore;
+    document.getElementById('math-correct').textContent=mathCorrect;
+    const st=document.getElementById('math-status');
+    st.textContent='Correct! +10';
+    st.className='status-msg correct';
+  } else {
+    btn.className='math-choice wrong-ans';
+    // Highlight correct answer
+    document.querySelectorAll('.math-choice').forEach(b=>{if (+b.textContent===mathCurrentAnswer)b.className='math-choice correct-ans';});
+    const st=document.getElementById('math-status');
+    st.textContent='Wrong! Answer was '+mathCurrentAnswer;
+    st.className='status-msg wrong';
+  }
+  setTimeout(nextMathProblem, 900);
+}
+
+// Init
+buildSeqGrid();
+newMemoryGame();
+</script>
+
+<section style="max-width:760px;margin:0 auto;padding:44px 20px 52px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;line-height:1.75;color:#e9e9f2;user-select:text;-webkit-user-select:text;position:relative;z-index:1;">
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:0 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">About these three exercises</h2>
+
+<p style="margin:0 0 1.1em;">A quick note on expectations before the instructions, because "brain training" is a phrase that promises more than it can deliver. What these exercises reliably do is make you better at these exercises. Practising a sequence-recall task improves your sequence recall; practising timed arithmetic improves your timed arithmetic. Whether that improvement carries over into unrelated parts of life is a much weaker and much more contested claim, and we are not going to make it. Play these because the puzzles are enjoyable and because getting measurably better at a specific task is satisfying &mdash; not because a page told you it would raise your intelligence.</p>
+
+<p style="margin:0 0 1.1em;">With that said, the three games here do load genuinely different mental machinery, and it is worth knowing which is which.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">Memory Match</h2>
+
+<p style="margin:0 0 1.1em;">Cards lie face down in pairs. Flip two: if they match they stay up, if not they turn back over. Clear the grid in as few moves as possible. Three sizes are available &mdash; 4&times;4, 4&times;6 and 6&times;6 &mdash; and the game tracks moves, time, and your best result per size.</p>
+
+<p style="margin:0 0 1.1em;">What this exercises is spatial working memory: holding "that symbol was in the second row, third column" available while you do something else. Two habits help concretely. First, when you flip a card you have seen before, resist flipping randomly for its partner and instead recall where the partner was; guessing costs you the move and teaches you nothing. Second, describe positions to yourself in grid terms rather than as a vague sense of "over there" &mdash; a deliberate label is far more durable than a visual impression. On the 6&times;6 board, most people find they can track roughly the last handful of cards seen, and the game becomes a question of managing that limit rather than exceeding it.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">Sequence</h2>
+
+<p style="margin:0 0 1.1em;">Nine tiles light up one at a time in a growing order; you repeat it back by clicking. Each successful round appends one more step, so level 8 means an eight-item sequence. One mistake ends the run and the sequence resets.</p>
+
+<p style="margin:0 0 1.1em;">This is a serial recall task, and it has a well-known ceiling: raw sequences of arbitrary items get very hard somewhere in the single digits. The way past that ceiling is chunking &mdash; grouping the sequence into units so that eight items become three chunks. Recall "top-left, centre, bottom-right" as one movement shape rather than three separate positions. Many people also find that watching the path the highlights trace, rather than the individual tiles, extends their range noticeably. Neither trick increases your memory capacity; both reduce how much capacity the task demands, which is the only lever available.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">Math Sprint</h2>
+
+<p style="margin:0 0 1.1em;">Sixty seconds, multiple-choice arithmetic: addition and subtraction with two-digit numbers, and multiplication within roughly the times tables. You pick from four answers, so speed matters more than working the problem out longhand.</p>
+
+<p style="margin:0 0 1.1em;">The efficient strategy is elimination rather than calculation. Check the last digit &mdash; 34 + 27 must end in 1, which usually kills two of the four options immediately. Estimate magnitude: 8 &times; 12 is near 100, so a choice in the sixties is gone without further thought. Only compute properly when two survivors remain. This is genuinely a different skill from careful arithmetic, and it is the one the format rewards.</p>
+
+<h2 style="font-size:1.5rem;line-height:1.3;margin:1.8em 0 0.6em;padding-bottom:0.3em;border-bottom:1px solid rgba(255,255,255,0.1);">Getting a fair read on your scores</h2>
+
+<ul style="margin:0 0 1.2em;padding-left:1.5em;">
+  <li>Compare like with like. A 4&times;4 memory time means nothing next to a 6&times;6 time, which is why best scores are stored separately per size.</li>
+  <li>Expect noise. Sequence runs in particular swing widely; a single unlucky slip at level 3 is not a bad day, it is variance.</li>
+  <li>Short sessions beat long ones. Attention on these tasks degrades fast, and a tired score is not a measurement of anything.</li>
+  <li>Scores are kept in the page only and reset when you reload &mdash; there is no account and no tracking.</li>
+</ul>
+
+<p style="margin:0 0 1.1em;">If you would rather spend the time on games with more depth to them, our <a style="color:#e94560;" href="../guides/index.html">strategy guides</a> cover solitaire, chess and sudoku in detail.</p>
+
+</section>
+
+<footer class="site-footer-nav" style="border-top:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.3);padding:28px 20px 34px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;user-select:text;-webkit-user-select:text;position:relative;z-index:1;">
+  <nav style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 22px;margin-bottom:14px;">
+    <a href="../index.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Home</a>
+    <a href="../guides/index.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Guides</a>
+    <a href="../about.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">About</a>
+    <a href="../contact.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Contact</a>
+    <a href="../privacy.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Privacy Policy</a>
+    <a href="../terms.html" style="color:#a6a6c0;text-decoration:none;font-size:0.9rem;">Terms of Use</a>
+  </nav>
+  <p style="margin:0;color:#a6a6c0;font-size:0.84rem;">&copy; 2026 Puzzle Planet. All rights reserved.</p>
+</footer>
+</body>
+</html>
